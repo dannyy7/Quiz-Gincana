@@ -1,28 +1,27 @@
 import { useEffect } from 'react';
-import './Intro.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './Intro.module.css';
 
 function Intro() {
+  const navigate = useNavigate();
+  
   function iniciar() {
-    alert("Botão pressionado!");
+    navigate('PaginaPrincipal');
   }
 
-  // Quando o usuário apertar qualquer tecla, chama a função
   useEffect(() => {
     function handleKeyDown() {
-      iniciar(); // executa a ação do botão
+      iniciar();
     }
 
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
-    <div className="container">
-      <button className="iniciar" disabled>
-        <img src="/introbutton.png" alt="Botão" className="iniciar"/>
+    <div className={styles.container}>
+      <button className={styles.iniciar} onClick={iniciar}>
+        <img src="/intro/introbutton.png" alt="Botão" className={styles.iniciar}/>
       </button>
     </div>
   );
