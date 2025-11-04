@@ -1,22 +1,39 @@
-import { useEffect } from 'react';
-import './estiloglobal.css';  
-import styles from'./PaginaPrincipal.module.css';
+import { useState } from 'react';
+import './estiloglobal.css';
+import styles from './PaginaPrincipal.module.css';
 
+function PaginaPrincipal() {
+  const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
 
-function PaginaPrincipal(){
-    return(
-        <div className={styles.container}>
-            <div className="coluna">
-                <div className={styles.bloco1}></div>
-                <img src='pagina_principal/pgprincipalmoldura.png' className={styles.imagem}></img>
-                <img src='pagina_principal/pgprincipalsetadireita.png' className={styles.imagem}></img>
-                <img src='pagina_principal/pgprincipalsetaesquerda.png' className={styles.imagem}></img>
-                <img src='pagina_principal/pgprincipalbutton.png'className={styles.imagem}></img>
-                <button className={styles.botao}></button>
-             </div>
+  return (
+    <div className={styles.container}>
+      <button className={styles.botao}>
+        <img src="/pagina_principal/pgprincipalsetaesquerda.png" />
+      </button>
 
-            <img src='pagina_principal/pgprincipalbutton2.png' className={styles.imagem}></img>
-        </div>
-    )
+      <img
+        src="/pagina_principal/pgprincipalmoldura.png"
+        className={styles.tamanho}
+      />
+
+      <button className={styles.botao}>
+        <img src="/pagina_principal/pgprincipalsetadireita.png" />
+      </button>
+
+      {/* Botão que muda a imagem ao passar o mouse */}
+      <button
+        className={styles.botao}
+        onMouseEnter={() =>
+          setBotao('/pagina_principal/pgprincipaljogar2.png')
+        }
+        onMouseLeave={() =>
+          setBotao('/pagina_principal/pgprincipaljogar1.png')
+        }
+      >
+        <img src={botao} />
+      </button>
+    </div>
+  );
 }
-export default PaginaPrincipal
+
+export default PaginaPrincipal;

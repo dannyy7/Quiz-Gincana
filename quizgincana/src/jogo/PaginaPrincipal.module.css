@@ -7,7 +7,9 @@
 .container {
   width: 100vw;
   height: 100vh;
-  background: url('/pagina_principal/pgprincipalfundo.png') center/cover no-repeat;
+  background:
+  url('/pagina_principal/pgprincipalfundo2.png') center/cover no-repeat,
+  url('/pagina_principal/pgprincipalfundo1.png') center/cover no-repeat;
 }
 .imagem{
   position: absolute;
@@ -18,17 +20,20 @@
   object-fit: cover;      /* cobre o container mantendo proporção */
   object-position: center; /* centraliza */
 }
+
+.tamanho{
+  height: 450px;
+  width: auto;
+}
 .botao {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  
-  width: 150px;      /* largura da hitbox */
-  height: 80px;      /* altura da hitbox */
-  
-  padding: 0;
   border: none;
+  padding: 0;
   background: none;
   cursor: pointer;
+}
+
+.botao img {
+  display: block;
+  width: 100%; /* ou um tamanho fixo */
+  height: auto;
 }

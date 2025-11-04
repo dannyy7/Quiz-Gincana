@@ -4,7 +4,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
 import './index.css'
 import Intro from './jogo/Intro';
-import PaginaPrincipal from './jogo/paginaprincipal';
+import PaginaPrincipal from './jogo/PaginaPrincipal';
 
 
 const router = createBrowserRouter([
