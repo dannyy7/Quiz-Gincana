@@ -110,7 +110,8 @@
     height: auto;    
     z-index: 3;
     background-color: transparent;
-    cursor: pointer
+    cursor: pointer;
+    border: none;
   }
   .setadireita img{
     width: 100%;
@@ -127,7 +128,7 @@
     left: 29%;
     width: 13vw;
     height: 5vh;
-    background-color: aqua;
+    background-color: transparent;
   }
   .nome{
     display: flex;
@@ -148,14 +149,18 @@
     font-style: normal;
     font-size: 3vw;
     z-index: 3;
+    background-color: transparent;
+    border: none;
   }
   .jogar{
     position: absolute;
     width: 13vw;
-    top:87%;
-    left: 22.5%;
+    top:85%;
+    left: 22%;
     cursor: pointer;
     z-index: 3;
+    background-color: transparent;
+    border: none;
   }
   
   .jogar img {
@@ -169,12 +174,58 @@
     display:flex;
     position: absolute;
     z-index: 2;
-    top: 17%;
-    left: 54%;
-    border: 1px solid transparent;
-    border-radius: 20px;
-    background-color: blue;
-    width: 28%;
-    height: 50%;
+    top: 20%;
+    left: 52%;
+    border: 5px dashed rgba(255, 255, 255, 0.685);    
+    background-color: transparent;
+    width: 32%;
+    min-height: 10%;  
+    max-height: 42%;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: scroll;   /* scrollbar sempre disponível */
+    scrollbar-width: none;        /* Firefox */
+    border-radius: 10px;
+    padding-bottom: 2%;
+  }
+  
+  .listabox ::-webkit-scrollbar{
+    width: none;
   }
 
+
+.adicionarquiz{
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+    font-size: clamp(16px, 3vw, 32px);
+    cursor: pointer;
+    width: 25vw;
+    height: 5vh;
+    border: transparent;
+    border-radius: 10px;
+    display: flex;              
+    justify-content: center;    
+    align-items: center;    
+    padding-top: 8px;
+    margin-top: 6%;
+    background-color: rgb(253, 230, 209);
+}
+
+.quiz{
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+    font-size: clamp(5px, 1.5vw, 32px);
+    cursor: pointer;
+    width: 25vw;
+    height: 5vh;
+    border: transparent;
+    border-radius: 10px;
+    display: flex;              
+    justify-content: center;    
+    align-items: center;    
+    padding-top: 8px;
+    margin-top: 2%;
+    background-color: rgb(253, 230, 209);
+}

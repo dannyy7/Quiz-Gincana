@@ -26,15 +26,15 @@ function PaginaPrincipal() {
 
           <div>
             <ul>
-              <button>+</button>
-              <li>quiz1</li>
-              <li>quiz2</li>
-              <li>quiz3</li>
+              <button className={styles.adicionarquiz}>+</button>
+              <li className={styles.quiz}>Quiz-Gincana 2025</li>
+              <li className={styles.quiz}>quiz2</li>
+              <li className={styles.quiz}>quiz3</li>
             </ul>
         
           </div>
 
-          <div>{/* Falso Placeholder nas listas de quizes (usando opacity no css*/ }
+          <div>{/* Falso Placeholder nas listas de quizes (usando opacity no css)*/ }
             <p></p>
           </div>
 
