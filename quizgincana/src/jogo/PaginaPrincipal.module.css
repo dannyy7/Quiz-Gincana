@@ -4,17 +4,52 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .container {
+  position: relative;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: row;
-  background:
-  url('/pagina_principal/pgprincipalfundo2.png') center/cover no-repeat,
-  url('/pagina_principal/pgprincipalfundo1.png') center/cover no-repeat;
+  overflow: hidden;
+  background: url('/pagina_principal/pgprincipalfundo1.png') center/cover no-repeat;
 }
+
+/* Fundo atrás */
+.fundo2 {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('/pagina_principal/pgprincipalfundo2.png') center/cover no-repeat;
+  z-index: 2;
+  pointer-events: none
+}
+
+/* Botão no meio */
+.logar {
+  position: absolute;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  top: 9%;
+  left: 84%;
+  position: absolute;
+  width: 10vw;
+  height: auto;
+  cursor: pointer;
+  transition: left 0.3s ease; /* suaviza a mudança de posição */
+}
+
+.logar img{
+  width: 20vw; /* proporcional à tela */
+  height: auto;
+}
+
+.logar:hover {
+  left: 86%;
+}
+
 .imagem{
   position: absolute;
   top: 0;
@@ -43,112 +78,103 @@
       opacity: 1;   /* visível */
     }
   }
-
-.tamanho{
-  height: 400px;
-  width: auto;
-}
-.botao {
-  border: none;
-  padding: 0;
-  background: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.botao img {
-  display: block;
-  width: auto;   /* evita esticar */
-  height: auto;
-  margin: 0;
-}
-.coluna {
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto; /* Não vai crescer nem encolher */
-  align-items: center; /* Centraliza horizontalmente */
-  justify-content: flex-start; /* Alinha no topo */
-}
-.linha{
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    flex: 0 0 auto; /* Não vai crescer nem encolher */
-    align-items: center; /* Centraliza os itens horizontalmente */
-    justify-content: flex-start; /* Alinha os itens no topo */
-}
-.centro{
-    margin-right: 650px;
-    width: 530px;
-    margin-top: 130px;
+  .moldura {
+    position: absolute;   /* fixa em relação ao container */
+    top: 13%;             /* 10% do topo do container */
+    left: 16%;            /* 10% da esquerda do container */
+    width: 27%;           /* largura proporcional à tela */
+    height: auto;         /* mantém proporção da imagem */
+    z-index: 2;
+  }
+  .setaesquerda{
+    position: absolute;   
+    top: 37%;            
+    left: 14%;            
+    width: 3%;           
+    height: auto;    
+    z-index: 3;
+    background-color: transparent;
+    border: none;
+    cursor: pointer
+  }
+  .setaesquerda img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .setadireita{
+    position: absolute;   
+    top: 37%;            
+    left: 40%;            
+    width: 3%;           
+    height: auto;    
+    z-index: 3;
+    background-color: transparent;
+    cursor: pointer
+  }
+  .setadireita img{
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .nomebox{
+    z-index: 3;
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-style: normal;
+    position: absolute;
+    top: 17%;
+    left: 29%;
+    width: 13vw;
+    height: 5vh;
     background-color: aqua;
-}
-.centro2{
-    width: 530px;
-    margin-top: 90px;
-    margin-right: 680px;
+  }
+  .nome{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2vw;
+    cursor: default;
+  }
+  .codigobox{
+    position: absolute;
+    left: 15%;
+    top: 74%;
+    text-align: center;
+    width: 27vw;
+    height: 10vh;
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 3vw;
+    z-index: 3;
+  }
+  .jogar{
+    position: absolute;
+    width: 13vw;
+    top:87%;
+    left: 22.5%;
+    cursor: pointer;
+    z-index: 3;
+  }
+  
+  .jogar img {
+    width: 100%;
+    height: 100%;
+    display: block; /* remove espaços extras */
+    object-fit: cover; /* cobre todo o botão mantendo proporção */
+  }
+  
+  .listabox{
+    display:flex;
+    position: absolute;
+    z-index: 2;
+    top: 17%;
+    left: 54%;
+    border: 1px solid transparent;
+    border-radius: 20px;
     background-color: blue;
+    width: 28%;
+    height: 50%;
+  }
 
-}
-.codigo {
-  text-align: center;
-  margin-top: 4px;
-  height: 85px;
-  width: 450px;
-  font-size: 50px;
-  padding-left: 15px;
-  padding-top: 15px;
-  border: none;
-  background-color: transparent;
-  font-family: "Kalam", cursive;
-  font-weight: 600;
-  font-style: normal;
-  color: rgb(15, 15, 15);
-}
-
-/* Remove as setinhas no Chrome, Safari, Edge e Opera */
-.codigo::-webkit-outer-spin-button,
-.codigo::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Remove as setinhas no Firefox */
-.codigo[type=number] {
-  -moz-appearance: textfield;
-}
-
-.nome{
-  font-size: 25px;
-  font-weight: 500;
-  color: rgb(17, 17, 17);
-  font-family: "Kalam", cursive;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.caixanome{
-  width: 210px;
-  height: 50px;
-  top: 163px;
-  left: 450px;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.jogar{
-  margin-top: 25px;
-}
-
-.boxli{
-  background-color: aqua;
-  width: 600px;
-  height: 200px;
-}
-
-.quizes{}
