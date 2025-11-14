@@ -14,7 +14,7 @@ function PaginaPrincipal() {
         <button className={styles.setaesquerda}><img src='/pagina_principal/pgprincipalsetaesquerda.png'></img></button>
         <div className={styles.nomebox}><p className={styles.nome}>convidado</p></div>
 
-
+        <p className={styles.paragrafo} >digite o código da sala:</p>
         <div className={styles.wrapper}>
           <img 
             src="/pagina_principal/input.png"

@@ -140,7 +140,7 @@
   .wrapper {
     position: absolute;
     left: 15%;
-    top: 68%;
+    top: 70%;
     width: 28vw;
     height: 13vh;
     position: relative; /* Importante */
@@ -177,7 +177,7 @@
     font-size: 3vw;
     text-align: center;
     color: black;
-  
+    caret-color: rgb(67, 67, 67);
     z-index: 1;
   }
   
@@ -192,7 +192,7 @@
   .jogar{
     position: absolute;
     width: 13vw;
-    top:85%;
+    top:86%;
     left: 22%;
     cursor: pointer;
     z-index: 4;
@@ -248,6 +248,9 @@
     margin-top: 6%;
     background-color: rgb(253, 230, 209);
 }
+.adicionarquiz:hover{
+    border: 3px solid rgba(231, 108, 233, 0.414);
+}
 
 .quiz{
     font-family: "Kalam", cursive;
@@ -265,6 +268,10 @@
     padding-top: 8px;
     margin-top: 2%;
     background-color: rgb(253, 230, 209);
+
+}
+.quiz:hover{
+  border: 3px solid rgba(231, 108, 233, 0.414);
 }
 .mensagem{
   position: absolute;
@@ -282,6 +289,16 @@
   font-weight: 700;
   font-style: normal;
   font-size: clamp(5px, 2vw, 32px);
-  top: 30%;
-  left: 70%;
+  top: 10%;
+  left: 62%;
+}
+.paragrafo{
+  position: absolute;
+  z-index: 5;
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(5px, 1.5vw, 32px);
+  top: 66%;
+  left: 21%;
 }
