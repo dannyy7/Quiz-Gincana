@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
+import { useNavigate } from 'react-router-dom';
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
+  const navigate = useNavigate();
 
   return (
     <div className={styles.container}>
@@ -30,7 +32,7 @@ function PaginaPrincipal() {
             onMouseLeave={() =>
               setBotao('/pagina_principal/pgprincipaljogar1.png')
             } className={styles.jogar}><img src={botao}/></button>
-        <img src='/pagina_principal/pgprincipallogar.png' className={styles.logar}></img>
+        <button onClick={() => navigate("/SignUp")}><img src='/pagina_principal/pgprincipallogar.png' className={styles.logar}></img></button>
 
         <h1 className={styles.titulo}>meus quizes</h1>
 

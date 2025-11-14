@@ -118,6 +118,9 @@
     height: auto;
     display: block;
   }
+  .setadireita:hover img, .setaesquerda:hover img{
+    transform: scale(1.12);
+  }
   .nomebox{
     z-index: 3;
     font-family: "Kalam", cursive;
