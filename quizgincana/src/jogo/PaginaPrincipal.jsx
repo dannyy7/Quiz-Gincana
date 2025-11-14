@@ -13,7 +13,15 @@ function PaginaPrincipal() {
         <button className={styles.setadireita}><img src='/pagina_principal/pgprincipalsetadireita.png'></img></button>
         <button className={styles.setaesquerda}><img src='/pagina_principal/pgprincipalsetaesquerda.png'></img></button>
         <div className={styles.nomebox}><p className={styles.nome}>convidado</p></div>
-        <input className={styles.codigobox}></input>
+
+        <div className={styles.codigobox}>
+          <img 
+            src="/pagina_principal/input.png" 
+            className={styles.inputicon} 
+          />
+          <input type="number" />
+        </div>
+        
         <button onMouseEnter={() =>
               setBotao('/pagina_principal/pgprincipaljogar2.png')
             }
