@@ -137,45 +137,58 @@
     font-size: 2vw;
     cursor: default;
   }
-/* Wrapper do input */
-.codigobox {
-  left: 15%;
-  top: 74%;
-  width: 27vw;
-  height: 10vh;
+  .wrapper {
+    position: absolute;
+    left: 15%;
+    top: 68%;
+    width: 28vw;
+    height: 13vh;
+    position: relative; /* Importante */
+    z-index: 5;
+  }
   
-  position: relative; /* NECESSÁRIO para posicionar a imagem */
-}
-
-/* Ícone dentro do input */
-.inputicon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  width: 50vw;
-  transform: translateY(-50%);
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* Estilo do input */
-.codigobox input {
-  width: 100%;
-  height: 100%;
-  padding-left: 3.5vw;  /* espaço para a imagem */
-  text-align: center;
-
-  font-family: "Kalam", cursive;
-  font-weight: 700;
-  font-style: normal;
-  font-size: 3vw;
-
-  background-color: transparent;
-  border:none;
-  outline: none;
-  z-index: 4;
-}
-
+  /* A imagem fica exatamente por cima */
+  .inputImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* mantém formato */
+    z-index: 3;
+    pointer-events: none; /* imagem não bloqueia o clique */
+  }
+  
+  /* O input REAL fica embaixo da imagem */
+  .realInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+  
+    width: 100%;
+    height: 100%;
+  
+    background: transparent;
+    border: none;
+    outline: none;
+  
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-size: 3vw;
+    text-align: center;
+    color: black;
+  
+    z-index: 1;
+  }
+  
+  .realInput::-webkit-inner-spin-button,
+  .realInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .realInput {
+    -moz-appearance: textfield;
+  }
   .jogar{
     position: absolute;
     width: 13vw;
@@ -252,4 +265,23 @@
     padding-top: 8px;
     margin-top: 2%;
     background-color: rgb(253, 230, 209);
+}
+.mensagem{
+  position: absolute;
+  width: 25vw;
+  height: auto;
+  top: 65%;
+  left: 55%;
+  z-index: 3;
+}
+
+.titulo{
+  position: absolute;
+  z-index: 5;
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  font-style: normal;
+  font-size: clamp(5px, 2vw, 32px);
+  top: 30%;
+  left: 70%;
 }

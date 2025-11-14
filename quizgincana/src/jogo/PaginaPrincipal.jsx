@@ -14,12 +14,14 @@ function PaginaPrincipal() {
         <button className={styles.setaesquerda}><img src='/pagina_principal/pgprincipalsetaesquerda.png'></img></button>
         <div className={styles.nomebox}><p className={styles.nome}>convidado</p></div>
 
-        <div className={styles.codigobox}>
+
+        <div className={styles.wrapper}>
           <img 
-            src="/pagina_principal/input.png" 
-            className={styles.inputicon} 
+            src="/pagina_principal/input.png"
+            alt="img"
+            className={styles.inputImage}
           />
-          <input type="number" />
+          <input type="number" className={styles.realInput} />
         </div>
         
         <button onMouseEnter={() =>
@@ -29,6 +31,8 @@ function PaginaPrincipal() {
               setBotao('/pagina_principal/pgprincipaljogar1.png')
             } className={styles.jogar}><img src={botao}/></button>
         <img src='/pagina_principal/pgprincipallogar.png' className={styles.logar}></img>
+
+        <h1 className={styles.titulo}>meus quizes</h1>
 
         <div className={styles.listabox}>
 
@@ -47,7 +51,7 @@ function PaginaPrincipal() {
           </div>
 
         </div>
-
+        <img src='/pagina_principal/loginmensagem.png' className={styles.mensagem}></img>
       
     </div>
   );
