@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
+  const [personagem, setPersonagem] = useState(['/personagens/p1.png','/personagens/p2.png','/personagens/p3.png'])
   const navigate = useNavigate();
 
   return (
