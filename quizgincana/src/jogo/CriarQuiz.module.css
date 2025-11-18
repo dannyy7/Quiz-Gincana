@@ -1,0 +1,47 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    width: 100vw;
+    height: 100vh;
+    background: url("/criar_quiz/fundogrid.png")center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+}
+.boxpostit{
+    display: flex;
+    flex-direction: row;
+    background-color: aqua;
+    height: 70vh;
+    width: 80vw;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;     /* ativa o scroll vertical */
+    overflow-x: hidden;   /* evita scroll lateral */
+    gap: 15px;
+}
+/* Chrome, Edge, Opera */
+.boxpostit::-webkit-scrollbar {
+    display: none;
+}
+
+/* Firefox */
+.boxpostit {
+    scrollbar-width: none;
+}
+.postit{
+    height: 220px;
+    width: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
