@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 *{
     margin: 0;
     padding: 0;
@@ -6,42 +8,175 @@
 .container{
     width: 100vw;
     height: 100vh;
-    background: url("/criar_quiz/fundogrid.png")center/cover no-repeat;
+    background: url("/criar_quiz/fundogrid.png") center/cover no-repeat;
     display: flex;
     flex-direction: column;
     align-items:center;
     justify-content: center;
 }
+
 .row{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    gap: 150px;
 }
+
 .boxpostit{
     display: flex;
     flex-direction: row;
-    background-color: aqua;
-    height: 70vh;
+    height: 65vh;
     width: 80vw;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    overflow-y: auto;     /* ativa o scroll vertical */
-    overflow-x: hidden;   /* evita scroll lateral */
+    overflow-y: auto;
+    overflow-x: hidden;
     gap: 15px;
+    margin-top: 10px;
+    padding-top: 10px;
+    padding-bottom: 20px;
 }
-/* Chrome, Edge, Opera */
+
 .boxpostit::-webkit-scrollbar {
     display: none;
 }
 
-/* Firefox */
 .boxpostit {
     scrollbar-width: none;
 }
+
 .postit{
     height: 220px;
     width: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; /* necessário para posicionar o número */
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.numeroPostit{
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "Kalam", cursive;
+    font-size: 80px;
+    font-weight: 700;
+    color: #00000057;
+    pointer-events: none; /* para não impedir o clique no post-it */
+}
+
+
+.postit:hover {
+    transform: scale(1.08) rotate(-1deg);
+    transition: transform 0.15s ease-in-out;
+}
+
+/* garante que a imagem também anima suave */
+.postit img {
+    transition: transform 0.15s ease-in-out;
+}
+
+/* número acompanha a animação */
+.numeroPostit {
+    transition: transform 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.postit:hover .numeroPostit {
+    transform: translateX(-50%) scale(1.15);
+    color: #000000cc;
+}
+
+
+.postitAdd {
+    height: 220px;
+    width: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out, background-color 0.2s ease;
+}
+
+.postitAdd img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px; /* opcional */
+}
+
+.plusSign {
+    position: absolute; /* coloca o + sobre a imagem */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Kalam", cursive;
+    font-size: 90px; /* maior que os números normais */
+    font-weight: 700;
+    color: #00000057;
+    pointer-events: none;
+    transition: transform 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.postitAdd:hover .plusSign {
+    transform: translate(-50%, -50%) scale(1.2);
+    color: #333;
+}
+
+.postitAdd:hover {
+    transform: scale(1.08) rotate(-1deg);
+}
+
+
+.fechar{
+    height: 75px;
+    width: 75px;
+    position: absolute;
+    top: 5vh;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.fechar:hover{
+    transform: scale(1.1);
+}
+
+.tituloWrapper{
+    position: relative;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.postittitulo{
+    width: 100%;
+}
+
+.titulo{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    text-align: center;
+    font-family: "Kalam", cursive;
+    outline: none;
+    font-weight: 700;
 }
