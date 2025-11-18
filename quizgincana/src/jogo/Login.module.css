@@ -26,29 +26,6 @@
     justify-content: center;
 }
 
-.loginbox{ 
-    height: 5vh;
-    width: 15vw;  
-    border: dashed black 2px;  
-}
-
-.iconimg{
-    width:2.5vw;
-    height:5vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-}
-
-.forms{
-    display: flex;
-
-}
-
 .registrar{
     
 }
