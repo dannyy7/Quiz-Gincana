@@ -8,6 +8,10 @@ function PaginaPrincipal() {
   const [personagem, setPersonagem] = useState(['/personagens/p1.png','/personagens/p2.png','/personagens/p3.png'])
   const navigate = useNavigate();
 
+  function CriarQuiz(){
+    navigate("/CriarQuiz")
+  }
+
   return (
     <div className={styles.container}>
   
@@ -41,7 +45,7 @@ function PaginaPrincipal() {
 
           <div>
             <ul>
-              <button className={styles.adicionarquiz}>+</button>
+              <button className={styles.adicionarquiz} onClick={CriarQuiz}>+</button>
               <li className={styles.quiz}>Quiz-Gincana 2025</li>
               <li className={styles.quiz}>quiz2</li>
               <li className={styles.quiz}>quiz3</li>

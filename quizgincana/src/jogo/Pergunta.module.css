@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.container{
+    width: 100vw;
+    height: 100vh;
+}
+/* Classe parallax */
+.paralaxcontainer {
+  height: 100vh; /* ocupa a tela inteira */
+  background: linear-gradient(135deg, #6a11cb, #2575fc); /* gradiente */
+  background-attachment: fixed; /* efeito parallax */
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.enunciadobox{
+  background-color: white;
+  height: 40vh;
+  width: 90vw;
+  color: black;
+  display: flex;
+  text-align: left;
+  justify-content: center;
+  align-items: center;
+  font-family: "Kalam", cursive;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.enunciado{
+  margin: 30px;
+}

@@ -8,6 +8,7 @@ import PaginaPrincipal from './jogo/PaginaPrincipal';
 import SignUp from './jogo/SignUp';
 import Login from './jogo/Login';
 import CriarQuiz from './jogo/CriarQuiz';
+import Pergunta from './jogo/Pergunta';
 
 
 const router = createBrowserRouter([
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
   { path: "/SignUp", element: <SignUp/>},
   { path: "/Login", element: <Login/>},
   { path: "/Criarquiz", element: <CriarQuiz/>},
+  { path: "/Pergunta", element: <Pergunta/>},
 ]);
  //array de rotas, path é o caminho para as rotas
 
