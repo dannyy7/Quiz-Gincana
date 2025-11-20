@@ -1,22 +1,37 @@
-import { useEffect } from 'react';
+// src/jogo/Intro.jsx
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginAnonimo } from "../firebase/firebaseConfig";
 import styles from './Intro.module.css';
 
 function Intro() {
   const navigate = useNavigate();
-  
-  function iniciar() {
-    navigate('PaginaPrincipal');
+  const [logando, setLogando] = useState(false); // previne múltiplos logins
+
+  async function iniciar() {
+    if (logando) return; // evita múltiplas execuções
+    setLogando(true);
+
+    try {
+      await loginAnonimo(); // login anônimo
+      navigate('/PaginaPrincipal'); // navega após login
+    } catch (err) {
+      console.error("Erro ao logar anonimamente:", err);
+      setLogando(false);
+    }
   }
 
   useEffect(() => {
-    function handleKeyDown() {
-      iniciar();
-    }
+    const handleKeyDown = () => iniciar(); // qualquer tecla chama iniciar
+    document.addEventListener('keydown', handleKeyDown);
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []); // sem dependências extras
+
+  const handleKeyDown = () => {
+  console.log("Tecla pressionada!");
+  iniciar();
+};
 
   return (
     <div className={styles.container}>

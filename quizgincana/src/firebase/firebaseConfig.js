@@ -1,19 +1,31 @@
-// src/Bd/firebaseConfig.js
+// src/firebase/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 
-// Configuração que o Firebase te deu
+// SUA CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
-  apiKey: "SUA_CHAVE_AQUI",
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abc123def456",
+  apiKey: "AIzaSyDfXsJMze3HhSonFk8YCStcK4CSkGRtcoY",
+  authDomain: "quizgincana.firebaseapp.com",
+  databaseURL: "https://quizgincana-default-rtdb.firebaseio.com",
+  projectId: "quizgincana",
+  storageBucket: "quizgincana.firebasestorage.app",
+  messagingSenderId: "431469902883",
+  appId: "1:431469902883:web:48142716797b31a06c8596",
+  measurementId: "G-V815ND8F9K"
 };
 
-// Inicializa o app do Firebase
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializa o banco de dados Firestore
+// Exporta Firestore e Auth
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+// Função de login anônimo
+export const loginAnonimo = () => signInAnonymously(auth);
+
+// Função para ouvir mudanças no estado do usuário
+export const ouvirUsuario = (callback) => {
+  return onAuthStateChanged(auth, callback);
+};
