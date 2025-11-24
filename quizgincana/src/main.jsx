@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   { path: "/PaginaPrincipal", element: <PaginaPrincipal/> },
   { path: "/SignUp", element: <SignUp/>},
   { path: "/Login", element: <Login/>},
-  { path: "/Criarquiz", element: <CriarQuiz/>},
+  { path: "/CriarQuiz", element: <CriarQuiz/>},
   { path: "/PerguntaEditor", element: <PerguntaEditor/>},
 ]);
  //array de rotas, path é o caminho para as rotas
