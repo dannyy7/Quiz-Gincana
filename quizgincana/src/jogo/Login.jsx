@@ -36,6 +36,7 @@ function Login() {
     }
 
     try {
+      navigate("/PaginaPrincipal");
       // Faz login no Firebase Auth
       const cred = await loginEmail(email, senha);
 
@@ -46,7 +47,6 @@ function Login() {
       localStorage.setItem("nomeUsuario", nomeUsuario);
 
       // Redireciona pra pagina principal
-      navigate("/PaginaPrincipal");
     } catch (err) {
       console.log(err);
       if (err.code === "auth/user-not-found") {
