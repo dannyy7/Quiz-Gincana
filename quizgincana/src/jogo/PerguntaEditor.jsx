@@ -1,30 +1,59 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import styles from './PerguntaEditor.module.css';
 
 function PerguntaEditor(){
+    const [selecionado, setSelecionado] = useState(null);
+    const [respostas, setRespostas] = useState({ 1:'', 2:'', 3:'', 4:'' });
+    const [enunciado, setEnunciado] = useState("");
+
+    function handleChange(id, value) {
+        setRespostas({...respostas, [id]: value });
+    }
+
     return(
         <div className={styles.container}>
-
             <div className={styles.fundo}>
-                <div className={styles.enunciadobox}>
-                    <p className={styles.enunciado}>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Accusantium hic beatae, quaerat delectus consequuntur sint recusandae vero blanditiis nulla optio maxime impedit quae, expedita consectetur? Enim corporis iure dolores tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus dolores consectetur debitis dolor deserunt quis, in deleniti quidem voluptatibus ut illum aperiam omnis sapiente natus. Enim placeat rem veniam? Dolores?</p>
+                
+                {/* Enunciado centralizado e editável */}
+                <div
+                    className={styles.enunciadoInput}
+                    contentEditable="true"
+                    onInput={(e) => setEnunciado(e.target.innerText)}
+                    placeholder="Digite o enunciado da pergunta aqui..."
+                ></div>
+
+
+                    <input
+                        type="text"
+                        value={respostas[2]}
+                        onChange={(e) => handleChange(2, e.target.value)}
+                        onFocus={() => setSelecionado(2)}
+                        placeholder="Digite aqui"
+                        className={`${styles.alternativa} ${selecionado === 2 ? styles.verde : styles.vermelho}`}
+                    />
                 </div>
+
                 <div className={styles.alternativas}>
+                    <input
+                        type="text"
+                        value={respostas[3]}
+                        onChange={(e) => handleChange(3, e.target.value)}
+                        onFocus={() => setSelecionado(3)}
+                        placeholder="Digite aqui"
+                        className={`${styles.alternativa} ${selecionado === 3 ? styles.verde : styles.vermelho}`}
+                    />
 
-                    <button className={styles.alternativa}>resposta 1</button>
-                    <button className={styles.alternativa}>resposta 2</button>
-
-
-                </div>
-                <div className={styles.alternativas}>
-
-                    <button className={styles.alternativa}>resposta 3</button>
-                    <button className={styles.alternativa}>resposta 4</button>
-
+                    <input
+                        type="text"
+                        value={respostas[4]}
+                        onChange={(e) => handleChange(4, e.target.value)}
+                        onFocus={() => setSelecionado(4)}
+                        placeholder="Digite aqui"
+                        className={`${styles.alternativa} ${selecionado === 4 ? styles.verde : styles.vermelho}`}
+                    />
                 </div>
             </div>
-
         </div>
     )
 }
-export default PerguntaEditor
+export default PerguntaEditor;

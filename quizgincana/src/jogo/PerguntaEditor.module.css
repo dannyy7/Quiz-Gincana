@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&display=swap');
 
 *{
     padding: 0;
@@ -8,17 +8,6 @@
 .container{
     width: 100vw;
     height: 100vh;
-}
-/* Classe parallax */
-.paralaxcontainer {
-  height: 100vh; /* ocupa a tela inteira */
-  background: linear-gradient(135deg, #6a11cb, #2575fc); /* gradiente */
-  background-attachment: fixed; /* efeito parallax */
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .fundo{
@@ -31,34 +20,52 @@
   flex-direction: column;
 }
 
-.enunciadobox{
-  background-color: white;
+/* ENUNCIADO (Agora é um div contentEditable) */
+.enunciadoInput {
+  width: 91vw;
   height: 35vh;
-  width: 90vw;
-  color: black;
+  min-height: 140px;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid rgba(200, 200, 200, 0.6);
+  font-size: 20px;
+  font-family: "Kalam", cursive;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 3vh;
+
   display: flex;
-  text-align: left;
   justify-content: center;
   align-items: center;
-  font-family: "Kalam", cursive;
-  font-weight: 500;
-  font-style: normal;
-  font-size: 25px;
-  border: 2px dashed transparent;
-  border-radius: 10px;
-  margin-bottom: 5vh;
+  text-align: center;
+
+  white-space: pre-wrap; /* mantém quebras de linha */
 }
 
-.enunciado{
-  margin: 30px;
-}
-
+/* Alternativas */
 .alternativa{
   height: 20vh;
   width: 45vw;
   border: solid transparent 2px;
   border-radius: 10px;
-  background-color: white;
+  padding: 10px;
+  font-size: 20px;
+  font-family: "Kalam", cursive;
+  text-align: center;
+  background-color: rgb(98, 223, 98);
+}
+
+.alternativa:focus {
+  outline: none;
+  border: solid 3px #73ff91;
+}
+
+.vermelho{
+  background-color: rgb(252, 69, 69);
+}
+
+.verde{
+  background-color: rgb(98, 223, 98);
 }
 
 .alternativas{
@@ -67,4 +74,11 @@
   justify-content: center;
   margin-top: 1vh;
   gap: 1vw;
+}
+
+/* Efeito foco no enunciado */
+.enunciadoInput:focus {
+  border-color: rgb(120, 180, 255);
+  outline: none;
+  box-shadow: 0 0 5px rgba(120, 180, 255, 0.6);
 }
