@@ -11,8 +11,9 @@ function PerguntaEditor(){
     }
 
     return(
+        
         <div className={styles.container}>
-            <div className={styles.fundo}>
+        <div className={styles.fundo}>
                 
                 {/* Enunciado centralizado e editável */}
                 <div
@@ -54,6 +55,7 @@ function PerguntaEditor(){
                 </div>
             </div>
         </div>
+            
     )
 }
 export default PerguntaEditor;
