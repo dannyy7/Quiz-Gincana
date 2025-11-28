@@ -90,7 +90,7 @@ function CriarQuiz() {
             </div>
 
             {/* Botão Salvar (visual apenas, ainda sem função) */}
-            <button className={styles.salvar}></button>
+            <button className={styles.jogar}></button>
 
             <div className={styles.boxpostit}>
                 {imagensPostit.map((p, index) => (

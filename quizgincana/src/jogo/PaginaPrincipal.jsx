@@ -46,7 +46,7 @@ function PaginaPrincipal() {
     if (!user) return;
 
     if (user.isAnonymous) {
-      navigate("/Login");  
+      navigate("/Login");
     } else {
       try {
         const novoQuizID = await criarQuiz(user.uid, "Novo Quiz");
@@ -105,15 +105,17 @@ function PaginaPrincipal() {
         <div>
           <ul>
             <button className={styles.adicionarquiz} onClick={CriarQuiz}>+</button>
+
             {quizzes.map((quiz) => (
-              <li
-                key={quiz.id}
-                className={styles.quiz}
-                onClick={() => navigate(`/CriarQuiz/${quiz.id}`)}
-                style={{ cursor: 'pointer' }}
-              >
-                {quiz.titulo}
-              </li>
+              <div key={quiz.id} className={styles.quizItem}>
+                <li
+                  className={styles.quiz}
+                  onClick={() => navigate(`/CriarQuiz/${quiz.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {quiz.titulo}
+                </li>
+              </div>
             ))}
           </ul>
         </div>
