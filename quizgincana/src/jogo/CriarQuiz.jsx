@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import styles from './CriarQuiz.module.css';
+import { useParams } from 'react-router-dom';
+
+
+
 
 function CriarQuiz() {
+    const { quizID } = useParams(); // pega o quizID da URL
     const postit = [
         '/criar_quiz/postit1.png',
         '/criar_quiz/postit2.png',

@@ -13,6 +13,7 @@ import {
   setDoc, 
   getDoc 
 } from "firebase/firestore";
+import { collection, addDoc, updateDoc, getDocs } from "firebase/firestore";
 
 // CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
@@ -62,4 +63,56 @@ export const pegarUsuario = async (uid) => {
   const docSnap = await getDoc(docRef);
 
   return docSnap.exists() ? docSnap.data().nomeUsuario : null;
+};
+
+// Criar um novo quiz para um usuário
+export const criarQuiz = async (uid, titulo) => {
+  try {
+    const quizzesRef = collection(db, "usuarios", uid, "quizzes");
+    const docRef = await addDoc(quizzesRef, {
+      titulo,
+      criadoEm: new Date(),
+      perguntas: []
+    });
+    return docRef.id; // Retorna o ID do quiz criado
+  } catch (error) {
+    console.error("Erro ao criar quiz:", error);
+  }
+};
+
+// Adicionar uma pergunta a um quiz existente
+export const adicionarPergunta = async (uid, quizID, pergunta) => {
+  try {
+    const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
+
+    const quizSnap = await getDoc(quizRef);
+    if (!quizSnap.exists()) {
+      console.error("Quiz não encontrado");
+      return;
+    }
+
+    const quizData = quizSnap.data();
+    const perguntasAtualizadas = [...quizData.perguntas, pergunta];
+
+    await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+  } catch (error) {
+    console.error("Erro ao adicionar pergunta:", error);
+  }
+};
+
+// Pegar todos os quizzes de um usuário
+export const pegarQuizzesUsuario = async (uid) => {
+  try {
+    const quizzesRef = collection(db, "usuarios", uid, "quizzes");
+    const snapshot = await getDocs(quizzesRef);
+
+    const quizzes = [];
+    snapshot.forEach(doc => {
+      quizzes.push({ id: doc.id, ...doc.data() });
+    });
+
+    return quizzes;
+  } catch (error) {
+    console.error("Erro ao pegar quizzes:", error);
+  }
 };

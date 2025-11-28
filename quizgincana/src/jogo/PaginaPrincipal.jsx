@@ -4,20 +4,20 @@ import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ouvirUsuario, db } from "../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [quizzes, setQuizzes] = useState([]);
 
   useEffect(() => {
     const stop = ouvirUsuario(async (u) => {
       if (u) {
-        // Mostra o nome do displayName imediatamente
         const nomeInicial = u.isAnonymous ? "Convidado" : u.displayName || "Carregando...";
         setUser({ ...u, nomeUsuario: nomeInicial });
 
-        // Busca o nome de usuário no Firestore (caso queira atualizar com o oficial do banco)
         if (!u.isAnonymous) {
           try {
             const docRef = doc(db, "usuarios", u.uid);
@@ -26,23 +26,38 @@ function PaginaPrincipal() {
               const nomeFirestore = docSnap.data().nomeUsuario;
               setUser(prev => ({ ...prev, nomeUsuario: nomeFirestore }));
             }
+
+            const quizzesDoUsuario = await pegarQuizzesUsuario(u.uid);
+            setQuizzes(quizzesDoUsuario);
           } catch (err) {
-            console.error("Erro ao buscar nome de usuário:", err);
+            console.error("Erro ao buscar dados do usuário:", err);
           }
         }
       } else {
         setUser(null);
+        setQuizzes([]);
       }
     });
 
     return () => stop();
   }, []);
 
-  function CriarQuiz() {
-    if (user?.isAnonymous) {
+  async function CriarQuiz() {
+    if (!user) return;
+
+    if (user.isAnonymous) {
       navigate("/Login");  
     } else {
-      navigate("/CriarQuiz");
+      try {
+        const novoQuizID = await criarQuiz(user.uid, "Novo Quiz");
+
+        const quizzesDoUsuario = await pegarQuizzesUsuario(user.uid);
+        setQuizzes(quizzesDoUsuario);
+
+        navigate(`/CriarQuiz/${novoQuizID}`);
+      } catch (err) {
+        console.error("Erro ao criar quiz:", err);
+      }
     }
   }
 
@@ -59,7 +74,6 @@ function PaginaPrincipal() {
         <img src='/pagina_principal/pgprincipalsetaesquerda.png' />
       </button>
 
-      {/* Nome do usuário */}
       <div className={styles.nomebox}>
         <p className={styles.nome}>
           {user ? user.nomeUsuario : "Carregando..."}
@@ -91,7 +105,16 @@ function PaginaPrincipal() {
         <div>
           <ul>
             <button className={styles.adicionarquiz} onClick={CriarQuiz}>+</button>
-            <li className={styles.quiz}></li>
+            {quizzes.map((quiz) => (
+              <li
+                key={quiz.id}
+                className={styles.quiz}
+                onClick={() => navigate(`/CriarQuiz/${quiz.id}`)}
+                style={{ cursor: 'pointer' }}
+              >
+                {quiz.titulo}
+              </li>
+            ))}
           </ul>
         </div>
       </div>
