@@ -55,9 +55,15 @@
   background-color: rgb(98, 223, 98);
 }
 
+.enunciadoInput:empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+}
+
+
 .alternativa:focus {
   outline: none;
-  border: solid 3px #73ff91;
+  border: solid 1px #00ff37;
 }
 
 .vermelho{

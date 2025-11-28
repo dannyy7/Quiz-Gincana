@@ -15,21 +15,33 @@ function PerguntaEditor() {
             <div className={styles.fundo}>
 
                 {/* Enunciado */}
-                <div>
-                    className={styles.enunciadoInput}
-                    contentEditable
-                    onInput={(e) => setEnunciado(e.target.innerText)}
+                <div
+                className={styles.enunciadoInput}
+                contentEditable
+                onInput={(e) => setEnunciado(e.target.innerText)}
+                >
                 </div>
 
-                {/* Alternativa 2 */}
-                <input
+                <div className={styles.alternativas}>
+                    <input
                     type="text"
-                    value={respostas[2]}
-                    onChange={(e) => handleChange(2, e.target.value)}
-                    onFocus={() => setSelecionado(2)}
+                    value={respostas[1]}
+                    onChange={(e) => handleChange(1, e.target.value)}
+                    onFocus={() => setSelecionado(1)}
                     placeholder="Digite aqui"
-                    className={`${styles.alternativa} ${selecionado === 2 ? styles.verde : styles.vermelho}`}
-                />
+                    className={`${styles.alternativa} ${selecionado === 1 ? styles.verde : styles.vermelho}`}
+                    />
+
+                    {/* Alternativa 2 */}
+                    <input
+                        type="text"
+                        value={respostas[2]}
+                        onChange={(e) => handleChange(2, e.target.value)}
+                        onFocus={() => setSelecionado(2)}
+                        placeholder="Digite aqui"
+                        className={`${styles.alternativa} ${selecionado === 2 ? styles.verde : styles.vermelho}`}
+                    />
+                </div>
 
                 {/* Alternativas 3 e 4 */}
                 <div className={styles.alternativas}>
