@@ -33,7 +33,7 @@
 }
 
 .iconimg{
-    width:2.5vw;
+    width:3vw;
     height:5vh;
     display: flex;
     align-items: center;
@@ -49,6 +49,30 @@
 
 }
 
+.forms img{
+    width: 3vw;
+    height: 5vh;
+    padding-right: 5px
+}
+
+.signupbutton{
+    width: 9vw;
+    height: 6vh;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+.signupbutton img{
+    width: 9vw;
+    height:6vh;
+}
+
 .registrar{
-    
+
+}
+
+.registrar button{
+    background-color: transparent;
+    border: none;
 }

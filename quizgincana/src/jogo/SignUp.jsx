@@ -102,7 +102,7 @@ function SignUp() {
         </div>
 
         <button onClick={CriarUsuario} className={styles.signupbutton}>
-          Sign Up
+          <img src="./signup-login/signupbutton.png" alt="Signup" />
         </button>
 
         {erro && <p className={styles.erro}>{erro}</p>}
