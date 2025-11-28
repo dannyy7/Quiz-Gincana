@@ -14,6 +14,10 @@ function PerguntaEditor() {
         <div className={styles.container}>
             <div className={styles.fundo}>
 
+                <button className={styles.voltar}>
+                    voltar
+                </button>
+
                 {/* Enunciado */}
                 <div
                 className={styles.enunciadoInput}

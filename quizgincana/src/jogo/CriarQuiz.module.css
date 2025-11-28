@@ -180,3 +180,21 @@
     outline: none;
     font-weight: 700;
 }
+
+.salvar{
+    background: url('/criar_quiz/salvar.png')center/cover no-repeat;
+    position: absolute;
+    width: 10vw;
+    height:8vh;
+    top: 5vh;
+    z-index: 4;
+    right: 5%;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1 ease;
+}
+.salvar:hover{
+    background: url('/criar_quiz/salvarhover.png')center/cover no-repeat;
+    border: none;
+    scale: 1.1;
+}

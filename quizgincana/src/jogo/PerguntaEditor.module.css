@@ -67,11 +67,11 @@
 }
 
 .vermelho{
-  background-color: rgb(252, 69, 69);
+  background-color: rgb(255, 92, 92);
 }
 
 .verde{
-  background-color: rgb(98, 223, 98);
+  background-color: rgb(143, 255, 143);
 }
 
 .alternativas{
@@ -84,7 +84,7 @@
 
 /* Efeito foco no enunciado */
 .enunciadoInput:focus {
-  border-color: rgb(120, 180, 255);
+  background-color:#f5f5f5 ;
   outline: none;
   box-shadow: 0 0 5px rgba(120, 180, 255, 0.6);
 }

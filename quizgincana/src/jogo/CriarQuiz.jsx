@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import styles from './CriarQuiz.module.css';
-import { useParams } from 'react-router-dom';
-import { db, auth, adicionarPergunta } from '../firebase/bd'; // usa sua função do bd.js
+import { useParams, useNavigate } from 'react-router-dom';
+import { db, auth, adicionarPergunta } from '../firebase/bd';
 import { doc, getDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
-    const { quizID } = useParams(); // pega o quizID da URL
+    const { quizID } = useParams();   // pega o quizID da URL
+    const navigate = useNavigate();   // usado para redirecionar a outras páginas
+
     const postit = [
         '/criar_quiz/postit1.png',
         '/criar_quiz/postit2.png',
@@ -21,10 +23,9 @@ function CriarQuiz() {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                if (!auth.currentUser) return; // garante que o usuário esteja logado
+                if (!auth.currentUser) return;
                 const uid = auth.currentUser.uid;
 
-                // caminho correto para quizzes do usuário
                 const docRef = doc(db, 'usuarios', uid, 'quizzes', quizID);
                 const docSnap = await getDoc(docRef);
 
@@ -43,7 +44,6 @@ function CriarQuiz() {
 
         fetchQuiz();
 
-        // sorteia imagem para o botão "+"
         const indiceAdd = Math.floor(Math.random() * postit.length);
         setPostitAddImg(postit[indiceAdd]);
     }, [quizID]);
@@ -59,14 +59,16 @@ function CriarQuiz() {
         };
 
         try {
-            // usa a função do bd.js para salvar no Firestore
             await adicionarPergunta(uid, quizID, novaPergunta);
-
-            // atualiza localmente
             setImagensPostit(prev => [...prev, novaPergunta]);
         } catch (err) {
             console.error('Erro ao adicionar pergunta:', err);
         }
+    };
+
+    // 👉 Redirecionar para EditarPergunta ao clicar no post-it
+    const handleAbrirPergunta = (index) => {
+        navigate(`/editarpergunta/${quizID}/${index}`);
     };
 
     return (
@@ -87,10 +89,17 @@ function CriarQuiz() {
                 </div>
             </div>
 
+            {/* Botão Salvar (visual apenas, ainda sem função) */}
+            <button className={styles.salvar}></button>
+
             <div className={styles.boxpostit}>
                 {imagensPostit.map((p, index) => (
-                    <button className={styles.postit} key={index}>
-                        <img src={p.img} alt="" />
+                    <button
+                        className={styles.postit}
+                        key={index}
+                        onClick={() => handleAbrirPergunta(index)} // 👈 AQUI
+                    >
+                        <img src={p.img} alt="post-it" />
                         <span className={styles.numeroPostit}>{index + 1}</span>
                     </button>
                 ))}
