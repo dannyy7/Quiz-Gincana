@@ -65,7 +65,7 @@ function SignUp() {
       <div className={styles.cont_form}>
         <p>Nome de usuário</p>
         <div className={styles.forms}>
-          <img src="./signup-login/signupperson.png" alt="usuario" />
+          <img src="./signup-login/signupperson.png" alt="usuario" className={styles.usuario}/>
           <input
             type="text"
             placeholder="Digite seu usuario"
@@ -77,7 +77,7 @@ function SignUp() {
 
         <p>Email</p>
         <div className={styles.forms}>
-          <img src="./signup-login/enteremail.png" alt="email" />
+          <img src="./signup-login/enteremail.png" alt="email" className={styles.emaillockimg}/>
           <input
             type="text"
             placeholder="Digite seu Email"
@@ -90,7 +90,7 @@ function SignUp() {
         <p>Senha</p>
         <div className={styles.forms}>
           <button onClick={ocultarsenha} className={styles.iconimg}>
-            <img src={icon} alt="cadeado" />
+            <img src={icon} alt="cadeado" className={styles.emaillockimg}/>
           </button>
           <input
             type={tipo}

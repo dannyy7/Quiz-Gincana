@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -49,7 +51,13 @@
 
 }
 
-.forms img{
+.usuario{
+    width: 2.5vw;
+    height: 5vh;
+    padding-right: 5px
+}
+
+.emaillockimg{
     width: 3vw;
     height: 5vh;
     padding-right: 5px
@@ -69,10 +77,16 @@
 }
 
 .registrar{
-
+    display: flex;
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
 }
 
 .registrar button{
     background-color: transparent;
     border: none;
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
 }
