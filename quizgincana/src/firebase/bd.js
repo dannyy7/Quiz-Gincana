@@ -1,4 +1,4 @@
-// src/firebase/firebaseConfig.js
+// src/firebase/bd.js
 import { initializeApp } from "firebase/app";
 import { 
   getAuth,

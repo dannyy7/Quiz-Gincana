@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from './CriarQuiz.module.css';
 import { useParams } from 'react-router-dom';
-
-
-
+import { db, auth, adicionarPergunta } from '../firebase/bd'; // usa sua função do bd.js
+import { doc, getDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
     const { quizID } = useParams(); // pega o quizID da URL
@@ -15,24 +14,60 @@ function CriarQuiz() {
         '/criar_quiz/postit5.png'
     ];
 
-    const quantidadeDeBotoes = 30;
-
-    const [imagensSorteadas, setImagensSorteadas] = useState([]);
+    const [quiz, setQuiz] = useState(null);
+    const [imagensPostit, setImagensPostit] = useState([]);
     const [postitAddImg, setPostitAddImg] = useState('');
 
     useEffect(() => {
-        // sorteia os post-its normais
-        const sorteios = [];
-        for (let i = 0; i < quantidadeDeBotoes; i++) {
-            const indice = Math.floor(Math.random() * postit.length);
-            sorteios.push(postit[indice]);
-        }
-        setImagensSorteadas(sorteios);
+        const fetchQuiz = async () => {
+            try {
+                if (!auth.currentUser) return; // garante que o usuário esteja logado
+                const uid = auth.currentUser.uid;
+
+                // caminho correto para quizzes do usuário
+                const docRef = doc(db, 'usuarios', uid, 'quizzes', quizID);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setQuiz(data);
+                    setImagensPostit(data.perguntas || []);
+                } else {
+                    console.error('Quiz não encontrado');
+                    setQuiz({ perguntas: [] });
+                }
+            } catch (err) {
+                console.error('Erro ao buscar quiz:', err);
+            }
+        };
+
+        fetchQuiz();
 
         // sorteia imagem para o botão "+"
         const indiceAdd = Math.floor(Math.random() * postit.length);
         setPostitAddImg(postit[indiceAdd]);
-    }, []);
+    }, [quizID]);
+
+    const handleAdicionarPergunta = async () => {
+        if (!quiz || !auth.currentUser) return;
+
+        const uid = auth.currentUser.uid;
+
+        const novaPergunta = {
+            titulo: `Pergunta ${imagensPostit.length + 1}`,
+            img: postit[Math.floor(Math.random() * postit.length)]
+        };
+
+        try {
+            // usa a função do bd.js para salvar no Firestore
+            await adicionarPergunta(uid, quizID, novaPergunta);
+
+            // atualiza localmente
+            setImagensPostit(prev => [...prev, novaPergunta]);
+        } catch (err) {
+            console.error('Erro ao adicionar pergunta:', err);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -43,19 +78,25 @@ function CriarQuiz() {
             <div className={styles.row}>
                 <div className={styles.tituloWrapper}>
                     <img src="/criar_quiz/postittitulo.png" alt="" className={styles.postittitulo} />
-                    <input className={styles.titulo} placeholder="Título do Quiz..." />
+                    <input
+                        className={styles.titulo}
+                        placeholder="Título do Quiz..."
+                        value={quiz?.titulo || ''}
+                        onChange={e => setQuiz(prev => ({ ...prev, titulo: e.target.value }))}
+                    />
                 </div>
             </div>
 
             <div className={styles.boxpostit}>
-                {imagensSorteadas.map((img, index) => (
+                {imagensPostit.map((p, index) => (
                     <button className={styles.postit} key={index}>
-                        <img src={img} alt="" />
+                        <img src={p.img} alt="" />
                         <span className={styles.numeroPostit}>{index + 1}</span>
                     </button>
                 ))}
-                {/* BOTÃO DE CRIAR POST-IT com imagem aleatória */}
-                <button className={styles.postitAdd}>
+
+                {/* BOTÃO DE CRIAR POST-IT */}
+                <button className={styles.postitAdd} onClick={handleAdicionarPergunta}>
                     {postitAddImg && <img src={postitAddImg} alt="post-it" />}
                     <span className={styles.plusSign}>+</span>
                 </button>
