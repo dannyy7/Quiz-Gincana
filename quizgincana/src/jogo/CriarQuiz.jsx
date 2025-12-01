@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import styles from './CriarQuiz.module.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, auth, adicionarPergunta } from '../firebase/bd';
-import { doc, getDoc } from 'firebase/firestore';
+import styles from './CriarQuiz.module.css';
+import { auth, db } from '../firebase/bd';
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 function CriarQuiz() {
-    const { quizID } = useParams();   // pega o quizID da URL
-    const navigate = useNavigate();   // usado para redirecionar a outras páginas
+    const { quizID } = useParams();
+    const navigate = useNavigate();
 
-    const postit = [
+    const imagensPostitBase = [
         '/criar_quiz/postit1.png',
         '/criar_quiz/postit2.png',
         '/criar_quiz/postit3.png',
@@ -17,64 +17,57 @@ function CriarQuiz() {
     ];
 
     const [quiz, setQuiz] = useState(null);
-    const [imagensPostit, setImagensPostit] = useState([]);
+    const [perguntas, setPerguntas] = useState([]);
     const [postitAddImg, setPostitAddImg] = useState('');
 
     useEffect(() => {
-        const fetchQuiz = async () => {
-            try {
-                if (!auth.currentUser) return;
-                const uid = auth.currentUser.uid;
+        const carregarQuiz = async () => {
+            if (!auth.currentUser) return;
+            const uid = auth.currentUser.uid;
+            const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
+            const snap = await getDoc(ref);
 
-                const docRef = doc(db, 'usuarios', uid, 'quizzes', quizID);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setQuiz(data);
-                    setImagensPostit(data.perguntas || []);
-                } else {
-                    console.error('Quiz não encontrado');
-                    setQuiz({ perguntas: [] });
-                }
-            } catch (err) {
-                console.error('Erro ao buscar quiz:', err);
+            if (snap.exists()) {
+                const data = snap.data();
+                setQuiz(data);
+                setPerguntas(data.perguntas || []);
+            } else {
+                console.error('Quiz não encontrado');
             }
         };
 
-        fetchQuiz();
+        carregarQuiz();
 
-        const indiceAdd = Math.floor(Math.random() * postit.length);
-        setPostitAddImg(postit[indiceAdd]);
+        const imgAdd = imagensPostitBase[Math.floor(Math.random() * imagensPostitBase.length)];
+        setPostitAddImg(imgAdd);
     }, [quizID]);
 
     const handleAdicionarPergunta = async () => {
-        if (!quiz || !auth.currentUser) return;
-
+        if (!auth.currentUser || !quiz) return;
         const uid = auth.currentUser.uid;
 
         const novaPergunta = {
-            titulo: `Pergunta ${imagensPostit.length + 1}`,
-            img: postit[Math.floor(Math.random() * postit.length)]
+            id: crypto.randomUUID(),
+            titulo: `Pergunta ${perguntas.length + 1}`,
+            img: imagensPostitBase[Math.floor(Math.random() * imagensPostitBase.length)],
+            enunciado: '',
+            alternativas: {1:'',2:'',3:'',4:''},
+            respostaCorreta: null
         };
 
         try {
-            await adicionarPergunta(uid, quizID, novaPergunta);
-            setImagensPostit(prev => [...prev, novaPergunta]);
+            const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
+            await updateDoc(ref, { perguntas: arrayUnion(novaPergunta) });
+            setPerguntas(prev => [...prev, novaPergunta]);
         } catch (err) {
             console.error('Erro ao adicionar pergunta:', err);
         }
     };
 
-    // 👉 Redirecionar para EditarPergunta ao clicar no post-it
-    const handleAbrirPergunta = (index) => {
-        navigate(`/editarpergunta/${quizID}/${index}`);
-    };
-
     return (
         <div className={styles.container}>
             <button className={styles.fechar}>
-                <img src="/criar_quiz/fechar.png" alt="" />
+                <img src="/criar_quiz/fechar.png" alt="fechar" />
             </button>
 
             <div className={styles.row}>
@@ -89,24 +82,20 @@ function CriarQuiz() {
                 </div>
             </div>
 
-            {/* Botão Salvar (visual apenas, ainda sem função) */}
-            <button className={styles.jogar}></button>
-
             <div className={styles.boxpostit}>
-                {imagensPostit.map((p, index) => (
+                {perguntas.map((p, index) => p.id && (
                     <button
+                        key={p.id}
                         className={styles.postit}
-                        key={index}
-                        onClick={() => handleAbrirPergunta(index)} // 👈 AQUI
+                        onClick={() => navigate(`/PerguntaEditor/${quizID}/${p.id}`)}
                     >
                         <img src={p.img} alt="post-it" />
                         <span className={styles.numeroPostit}>{index + 1}</span>
                     </button>
                 ))}
 
-                {/* BOTÃO DE CRIAR POST-IT */}
                 <button className={styles.postitAdd} onClick={handleAdicionarPergunta}>
-                    {postitAddImg && <img src={postitAddImg} alt="post-it" />}
+                    {postitAddImg && <img src={postitAddImg} alt="Adicionar" />}
                     <span className={styles.plusSign}>+</span>
                 </button>
             </div>

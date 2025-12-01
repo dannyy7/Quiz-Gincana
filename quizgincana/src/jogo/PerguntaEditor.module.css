@@ -34,13 +34,11 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   margin-bottom: 3vh;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
+  display: block; /* trocar flex por block */
+  text-align: left; /* texto da esquerda para a direita */
   white-space: pre-wrap; /* mantém quebras de linha */
 }
+
 
 /* Alternativas */
 .alternativa{
@@ -86,5 +84,5 @@
 .enunciadoInput:focus {
   background-color:#f5f5f5 ;
   outline: none;
-  box-shadow: 0 0 5px rgba(120, 180, 255, 0.6);
+
 }
