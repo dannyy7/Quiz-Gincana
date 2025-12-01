@@ -48,7 +48,15 @@ export const pegarUsuario = async (uid) => {
 };
 
 // ================================
-// QUIZZES DO USUÁRIO (SEU CÓDIGO)
+// SALVAR PERSONAGEM DO USUÁRIO
+// ================================
+export const salvarPersonagem = async (uid, personagemURL) => {
+  const userRef = doc(db, "usuarios", uid);
+  await updateDoc(userRef, { personagem: personagemURL });
+};
+
+// ================================
+// QUIZZES DO USUÁRIO
 // ================================
 export const criarQuiz = async (uid, titulo) => {
   const quizzesRef = collection(db, "usuarios", uid, "quizzes");
@@ -71,17 +79,14 @@ export const pegarQuizzesUsuario = async (uid) => {
 };
 
 // ================================
-// QUIZZES PÚBLICOS (NOVO)
+// QUIZZES PÚBLICOS
 // ================================
-
-// Criar quiz público (igual ao do usuário)
 export const criarQuizPublico = async (titulo) => {
   const ref = collection(db, "quizzesPublicos");
   const docRef = await addDoc(ref, { titulo, criadoEm: new Date(), perguntas: [] });
   return docRef.id;
 };
 
-// Adicionar pergunta ao quiz público
 export const adicionarPerguntaPublica = async (quizID, novaPergunta) => {
   const quizRef = doc(db, "quizzesPublicos", quizID);
   const quizSnap = await getDoc(quizRef);
@@ -91,16 +96,14 @@ export const adicionarPerguntaPublica = async (quizID, novaPergunta) => {
   await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
 };
 
-// Pegar todos os quizzes públicos
 export const pegarQuizzesPublicos = async () => {
   const quizzesRef = collection(db, "quizzesPublicos");
   const snapshot = await getDocs(quizzesRef);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// Pegar um quiz público específico
 export const pegarQuizPublico = async (quizID) => {
   const quizRef = doc(db, "quizzesPublicos", quizID);
   const quizSnap = await getDoc(quizRef);
-  return quizSnap.exists() ? { id: quizID, ...quizSnap.data() } : null;
+  return docSnap.exists() ? { id: quizID, ...docSnap.data() } : null;
 };

@@ -84,7 +84,7 @@
     left: 16%;            /* 10% da esquerda do container */
     width: 27%;           /* largura proporcional à tela */
     height: auto;         /* mantém proporção da imagem */
-    z-index: 2;
+    z-index: 3;
   }
   .setaesquerda{
     position: absolute;   
@@ -304,4 +304,10 @@
   font-size: clamp(5px, 1.5vw, 32px);
   top: 66%;
   left: 21%;
+}
+.fotoperfil{
+    position: absolute;
+    top: 25%;
+    left: 20%;
+    z-index: 2;
 }

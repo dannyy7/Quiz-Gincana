@@ -3,7 +3,7 @@ import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ouvirUsuario, db } from "../firebase/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
 
 function PaginaPrincipal() {
@@ -11,6 +11,41 @@ function PaginaPrincipal() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
+
+  // =============================
+  // PERSONAGENS (com salvamento)
+  // =============================
+  const personagens = [
+    '/personagens/p1.png',
+    '/personagens/p2.png',
+    '/personagens/p3.png'
+  ];
+
+  const [posicao, setPosicao] = useState(0);
+  const personagem = personagens[posicao];
+
+  async function salvarFotoPerfil(url) {
+    if (!user || !user.uid || user.isAnonymous) return;
+
+    try {
+      const ref = doc(db, "usuarios", user.uid);
+      await updateDoc(ref, { fotoPerfil: url });
+    } catch (err) {
+      console.error("Erro ao salvar foto de perfil:", err);
+    }
+  }
+
+  function direita() {
+    const novaPosicao = (posicao + 1) % personagens.length;
+    setPosicao(novaPosicao);
+    salvarFotoPerfil(personagens[novaPosicao]);
+  }
+
+  function esquerda() {
+    const novaPosicao = (posicao - 1 + personagens.length) % personagens.length;
+    setPosicao(novaPosicao);
+    salvarFotoPerfil(personagens[novaPosicao]);
+  }
 
   useEffect(() => {
     const stop = ouvirUsuario(async (u) => {
@@ -22,9 +57,21 @@ function PaginaPrincipal() {
           try {
             const docRef = doc(db, "usuarios", u.uid);
             const docSnap = await getDoc(docRef);
+
             if (docSnap.exists()) {
-              const nomeFirestore = docSnap.data().nomeUsuario;
-              setUser(prev => ({ ...prev, nomeUsuario: nomeFirestore }));
+              const dados = docSnap.data();
+
+              setUser(prev => ({
+                ...prev,
+                nomeUsuario: dados.nomeUsuario,
+                fotoPerfil: dados.fotoPerfil
+              }));
+
+              // CARREGAR PERSONAGEM SALVO
+              if (dados.fotoPerfil) {
+                const index = personagens.indexOf(dados.fotoPerfil);
+                if (index !== -1) setPosicao(index);
+              }
             }
 
             const quizzesDoUsuario = await pegarQuizzesUsuario(u.uid);
@@ -66,11 +113,11 @@ function PaginaPrincipal() {
       <div className={styles.fundo2}></div>
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
-      <button className={styles.setadireita}>
+      <button className={styles.setadireita} onClick={direita}>
         <img src='/pagina_principal/pgprincipalsetadireita.png' />
       </button>
 
-      <button className={styles.setaesquerda}>
+      <button className={styles.setaesquerda} onClick={esquerda}>
         <img src='/pagina_principal/pgprincipalsetaesquerda.png' />
       </button>
 
@@ -79,6 +126,8 @@ function PaginaPrincipal() {
           {user ? user.nomeUsuario : "Carregando..."}
         </p>
       </div>
+
+      <img className={styles.fotoperfil} src={personagem}></img>
 
       <p className={styles.paragrafo}>digite o código da sala:</p>
 
