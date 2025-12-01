@@ -16,7 +16,7 @@
 
 .cont_form {
     display: flex;
-    background: url("/signup-login/signupformfundo.png") center/contain no-repeat;
+    background: url("/signup-login/loginformfundo.png") center/contain no-repeat;
     width: 40vw;
     height: 95vh;
     aspect-ratio: 788 / 843;
@@ -26,6 +26,32 @@
     justify-content: center;
 }
 
+.loginbutton{
+    width: 9vw;
+    height: 6vh;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    margin-top: 3vh;
+    margin-bottom: 17px;
+}
+
+.loginbutton img{
+    width: 9vw;
+    height:6vh;
+}
+
 .registrar{
-    
+    display: flex;
+    justify-items: flex-end;
+}
+
+.registrar button{
+    background-color: transparent;
+    border: none;
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 17px;
+    color: #FF0D64;
 }

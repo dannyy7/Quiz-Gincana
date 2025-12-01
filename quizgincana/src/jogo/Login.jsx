@@ -91,7 +91,7 @@ function Login() {
         </div>
 
         <button onClick={FazerLogin} className={styles.loginbutton}>
-          Login
+          <img src="./signup-login/loginbutton.png" alt="Login" />
         </button>
 
         {erro && <p className={styles.erro}>{erro}</p>}
