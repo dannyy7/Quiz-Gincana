@@ -7,7 +7,7 @@ import styles from './PerguntaEditor.module.css';
 function PerguntaEditor() {
     const { quizID, perguntaID } = useParams();
     const [pergunta, setPergunta] = useState(null);
-    const [selecionado, setSelecionado] = useState(null);
+    const [selecionado, setSelecionado] = useState(null); // A CERTA
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
     const [enunciado, setEnunciado] = useState('');
 
@@ -29,6 +29,7 @@ function PerguntaEditor() {
                 setPergunta(p);
                 setEnunciado(p.enunciado || '');
                 setRespostas(p.alternativas || {1:'',2:'',3:'',4:''});
+                setSelecionado(p.alternativaCorreta || null); // ← CARREGAR A CERTA
             }
         };
 
@@ -43,8 +44,18 @@ function PerguntaEditor() {
         if (!quizSnap.exists()) return;
 
         const quizData = quizSnap.data();
+
         const perguntasAtualizadas = quizData.perguntas.map(p => {
-            if (p.id === perguntaID) return { ...p, enunciado, alternativas: respostas };
+            if (p.id === perguntaID) {
+                return { 
+                    ...p, 
+                    enunciado, 
+                    alternativas: respostas,
+
+                    // SALVA A ALTERNATIVA CERTA
+                    alternativaCorreta: selecionado 
+                };
+            }
             return p;
         });
 
@@ -69,6 +80,7 @@ function PerguntaEditor() {
                     <input type="text" value={respostas[1]} onChange={e => handleChange(1, e.target.value)} onFocus={() => setSelecionado(1)}
                         placeholder="Digite aqui"
                         className={`${styles.alternativa} ${selecionado===1 ? styles.verde : styles.vermelho}`} />
+                    
                     <input type="text" value={respostas[2]} onChange={e => handleChange(2, e.target.value)} onFocus={() => setSelecionado(2)}
                         placeholder="Digite aqui"
                         className={`${styles.alternativa} ${selecionado===2 ? styles.verde : styles.vermelho}`} />
@@ -78,12 +90,15 @@ function PerguntaEditor() {
                     <input type="text" value={respostas[3]} onChange={e => handleChange(3, e.target.value)} onFocus={() => setSelecionado(3)}
                         placeholder="Digite aqui"
                         className={`${styles.alternativa} ${selecionado===3 ? styles.verde : styles.vermelho}`} />
+                    
                     <input type="text" value={respostas[4]} onChange={e => handleChange(4, e.target.value)} onFocus={() => setSelecionado(4)}
                         placeholder="Digite aqui"
                         className={`${styles.alternativa} ${selecionado===4 ? styles.verde : styles.vermelho}`} />
                 </div>
 
-                <button onClick={salvarAlteracoes} style={{ marginTop:'10px' }}>Salvar Alterações</button>
+                <button onClick={salvarAlteracoes} style={{ marginTop:'10px' }}>
+                    Salvar Alterações
+                </button>
             </div>
         </div>
     );
