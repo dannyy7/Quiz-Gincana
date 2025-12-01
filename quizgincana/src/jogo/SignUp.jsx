@@ -63,6 +63,9 @@ function SignUp() {
   return (
     <div className={styles.container}>
       <div className={styles.cont_form}>
+        <div>
+          
+        </div>
         <p>Nome de usuário</p>
         <div className={styles.forms}>
           <img src="./signup-login/signupperson.png" alt="usuario" className={styles.usuario}/>
