@@ -6,6 +6,13 @@
     box-sizing: border-box;
 }
 
+p{
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 17px;
+}
+
 .container {
     position: relative;
     width: 100vw;
@@ -78,9 +85,6 @@
 
 .registrar{
     display: flex;
-    font-family: "Kalam", cursive;
-    font-weight: 600;
-    font-style: normal;
 }
 
 .registrar button{
@@ -89,4 +93,6 @@
     font-family: "Kalam", cursive;
     font-weight: 600;
     font-style: normal;
+    font-size: 17px;
+    color: #FF0D64;
 }
