@@ -100,3 +100,8 @@ p{
     font-size: 17px;
     color: #FF0D64;
 }
+
+.registrar button:hover{
+    color: #12795C;
+    cursor: pointer;
+}

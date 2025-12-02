@@ -84,3 +84,8 @@
     font-size: 17px;
     color: #12795C;
 }
+
+.registrar button:hover{
+    color: #8000ff;
+    cursor: pointer;
+}
