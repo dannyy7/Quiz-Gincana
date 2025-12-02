@@ -6,7 +6,7 @@ import styles from './PerguntaEditor.module.css';
 
 function PerguntaEditor() {
     const { quizID, perguntaID } = useParams();
-    const navigate = useNavigate(); // ← ADICIONADO
+    const navigate = useNavigate();
     const [pergunta, setPergunta] = useState(null);
     const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
@@ -37,9 +37,6 @@ function PerguntaEditor() {
         carregarPergunta();
     }, [quizID, perguntaID]);
 
-    // ===============================
-    // FUNÇÃO DE SALVAR ALTERAÇÕES
-    // ===============================
     const salvarAlteracoes = async () => {
         if (!auth.currentUser) return;
         const uid = auth.currentUser.uid;
@@ -63,13 +60,9 @@ function PerguntaEditor() {
 
         await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
 
-        // ← REDIRECIONA para CriarQuiz após salvar
         navigate(`/CriarQuiz/${quizID}`);
     };
 
-    // ===============================
-    // AUTOSAVE (debounce 600ms)
-    // ===============================
     useEffect(() => {
         if (!auth.currentUser || !pergunta) return;
 
@@ -91,6 +84,7 @@ function PerguntaEditor() {
         <div className={styles.container}>
 
             <div className={styles.fundo}>
+                
                 <textarea
                     className={styles.enunciadoInput}
                     value={enunciado}
@@ -99,26 +93,42 @@ function PerguntaEditor() {
                 />
 
                 <div className={styles.alternativas}>
-                    <input type="text" value={respostas[1]} onChange={e => handleChange(1, e.target.value)} onFocus={() => setSelecionado(1)}
+                    <textarea 
+                        value={respostas[1]}
+                        onChange={e => handleChange(1, e.target.value)}
+                        onFocus={() => setSelecionado(1)}
                         placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${selecionado===1 ? styles.verde : styles.vermelho}`} />
-                    
-                    <input type="text" value={respostas[2]} onChange={e => handleChange(2, e.target.value)} onFocus={() => setSelecionado(2)}
+                        className={`${styles.alternativa} ${selecionado===1 ? styles.verde : styles.vermelho}`}
+                    />
+
+                    <textarea 
+                        value={respostas[2]}
+                        onChange={e => handleChange(2, e.target.value)}
+                        onFocus={() => setSelecionado(2)}
                         placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${selecionado===2 ? styles.verde : styles.vermelho}`} />
+                        className={`${styles.alternativa} ${selecionado===2 ? styles.verde : styles.vermelho}`}
+                    />
                 </div>
 
                 <div className={styles.alternativas}>
-                    <input type="text" value={respostas[3]} onChange={e => handleChange(3, e.target.value)} onFocus={() => setSelecionado(3)}
+                    <textarea 
+                        value={respostas[3]}
+                        onChange={e => handleChange(3, e.target.value)}
+                        onFocus={() => setSelecionado(3)}
                         placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${selecionado===3 ? styles.verde : styles.vermelho}`} />
-                    
-                    <input type="text" value={respostas[4]} onChange={e => handleChange(4, e.target.value)} onFocus={() => setSelecionado(4)}
+                        className={`${styles.alternativa} ${selecionado===3 ? styles.verde : styles.vermelho}`}
+                    />
+
+                    <textarea 
+                        value={respostas[4]}
+                        onChange={e => handleChange(4, e.target.value)}
+                        onFocus={() => setSelecionado(4)}
                         placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${selecionado===4 ? styles.verde : styles.vermelho}`} />
+                        className={`${styles.alternativa} ${selecionado===4 ? styles.verde : styles.vermelho}`}
+                    />
                 </div>
 
-                <button onClick={salvarAlteracoes} style={{ marginTop:'10px' }}>
+                <button onClick={salvarAlteracoes} className={styles.salvar}>
                     Salvar Alterações
                 </button>
             </div>

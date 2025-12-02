@@ -20,7 +20,7 @@
   flex-direction: column;
 }
 
-/* ENUNCIADO (Agora é um div contentEditable) */
+/* ENUNCIADO */
 .enunciadoInput {
   width: 91vw;
   height: 35vh;
@@ -33,16 +33,26 @@
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   margin-bottom: 3vh;
-
-  display: block; /* trocar flex por block */
-  text-align: left; /* texto da esquerda para a direita */
-  white-space: pre-wrap; /* mantém quebras de linha */
+  white-space: pre-wrap;
+  resize: none;
 }
 
+.enunciadoInput:focus {
+  background-color:#f5f5f5 ;
+  outline: none;
+}
 
 /* Alternativas */
+.alternativas{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1vh;
+  gap: 1vw;
+}
+
 .alternativa{
-  height: 20vh;
+  min-height: 16vh;
   width: 45vw;
   border: solid transparent 2px;
   border-radius: 10px;
@@ -50,14 +60,9 @@
   font-size: 20px;
   font-family: "Kalam", cursive;
   text-align: center;
-  background-color: rgb(98, 223, 98);
+  resize: none;
+  overflow-y: auto;
 }
-
-.enunciadoInput:empty::before {
-  content: attr(data-placeholder);
-  color: #aaa;
-}
-
 
 .alternativa:focus {
   outline: none;
@@ -72,17 +77,47 @@
   background-color: rgb(143, 255, 143);
 }
 
-.alternativas{
+/* Botão salvar */
+.salvar{
+  position: absolute;
+  bottom: 4vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-top: 1vh;
-  gap: 1vw;
+  align-items: center;
+  text-align: center;
+  border: 5px dashed white;
+  color: black;
+  background-color: rgb(189, 158, 101);
+  border-radius: 10px;
+  padding: 5px;
+  width: 12vw;
+  height: 7vh;
+  font-size: 18px;
+  font-family: "Kalam", cursive;
 }
 
-/* Efeito foco no enunciado */
-.enunciadoInput:focus {
-  background-color:#f5f5f5 ;
-  outline: none;
+/* RESPONSIVO */
+@media (max-width: 820px) {
 
+  .alternativas {
+    flex-direction: column;
+    gap: 2vh;
+  }
+
+  .alternativa {
+    width: 90vw;
+    min-height: 18vh;
+  }
+
+  .salvar {
+    width: 45vw;
+    height: 7vh;
+    font-size: 22px;
+  }
+
+  .enunciadoInput {
+    width: 94vw;
+    height: 30vh;
+    font-size: 18px;
+  }
 }
