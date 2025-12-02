@@ -89,9 +89,6 @@ function PerguntaEditor() {
 
     return (
         <div className={styles.container}>
-            <p style={{ color: "white", textAlign: "center" }}>
-                Editando Pergunta: {perguntaID}
-            </p>
 
             <div className={styles.fundo}>
                 <textarea
