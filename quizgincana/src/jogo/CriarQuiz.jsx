@@ -64,9 +64,44 @@ function CriarQuiz() {
         }
     };
 
+    // ===============================
+    // SALVAR TÍTULO AO FECHAR
+    // ===============================
+    const handleFechar = async () => {
+        if (!auth.currentUser || !quiz) return;
+
+        const uid = auth.currentUser.uid;
+        const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
+
+        try {
+            await updateDoc(ref, { titulo: quiz.titulo });
+            navigate(-1);
+        } catch (err) {
+            console.error('Erro ao salvar título:', err);
+        }
+    };
+
+    // ===============================
+    // AUTOSAVE DO TÍTULO (debounce 600ms)
+    // ===============================
+    useEffect(() => {
+        if (!auth.currentUser || !quiz) return;
+        if (quiz.titulo === undefined) return;
+
+        const uid = auth.currentUser.uid;
+        const ref = doc(db, "usuarios", uid, "quizzes", quizID);
+
+        const timeout = setTimeout(() => {
+            updateDoc(ref, { titulo: quiz.titulo })
+                .catch(err => console.error("Erro ao autosalvar título:", err));
+        }, 600); // salva 600ms após parar de digitar
+
+        return () => clearTimeout(timeout);
+    }, [quiz?.titulo]);
+
     return (
         <div className={styles.container}>
-            <button className={styles.fechar}>
+            <button className={styles.fechar} onClick={handleFechar}>
                 <img src="/criar_quiz/fechar.png" alt="fechar" />
             </button>
 

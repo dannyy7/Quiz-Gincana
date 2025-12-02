@@ -7,7 +7,7 @@ import styles from './PerguntaEditor.module.css';
 function PerguntaEditor() {
     const { quizID, perguntaID } = useParams();
     const [pergunta, setPergunta] = useState(null);
-    const [selecionado, setSelecionado] = useState(null); // A CERTA
+    const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
     const [enunciado, setEnunciado] = useState('');
 
@@ -29,13 +29,16 @@ function PerguntaEditor() {
                 setPergunta(p);
                 setEnunciado(p.enunciado || '');
                 setRespostas(p.alternativas || {1:'',2:'',3:'',4:''});
-                setSelecionado(p.alternativaCorreta || null); // ← CARREGAR A CERTA
+                setSelecionado(p.alternativaCorreta || null);
             }
         };
 
         carregarPergunta();
     }, [quizID, perguntaID]);
 
+    // ===============================
+    // FUNÇÃO DE SALVAR ALTERAÇÕES
+    // ===============================
     const salvarAlteracoes = async () => {
         if (!auth.currentUser) return;
         const uid = auth.currentUser.uid;
@@ -51,8 +54,6 @@ function PerguntaEditor() {
                     ...p, 
                     enunciado, 
                     alternativas: respostas,
-
-                    // SALVA A ALTERNATIVA CERTA
                     alternativaCorreta: selecionado 
                 };
             }
@@ -61,6 +62,19 @@ function PerguntaEditor() {
 
         await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
     };
+
+    // ===============================
+    // AUTOSAVE (debounce 600ms)
+    // ===============================
+    useEffect(() => {
+        if (!auth.currentUser || !pergunta) return;
+
+        const timeout = setTimeout(() => {
+            salvarAlteracoes().catch(err => console.error("Erro ao autosalvar pergunta:", err));
+        }, 600); // salva 600ms após parar de digitar ou alterar alternativa
+
+        return () => clearTimeout(timeout);
+    }, [enunciado, respostas, selecionado]);
 
     return (
         <div className={styles.container}>
