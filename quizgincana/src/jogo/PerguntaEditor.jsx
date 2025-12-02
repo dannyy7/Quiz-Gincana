@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase/bd';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import styles from './PerguntaEditor.module.css';
 
 function PerguntaEditor() {
     const { quizID, perguntaID } = useParams();
+    const navigate = useNavigate(); // ← ADICIONADO
     const [pergunta, setPergunta] = useState(null);
-    const [selecionado, setSelecionado] = useState(null); // A CERTA
+    const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
     const [enunciado, setEnunciado] = useState('');
 
@@ -29,13 +30,16 @@ function PerguntaEditor() {
                 setPergunta(p);
                 setEnunciado(p.enunciado || '');
                 setRespostas(p.alternativas || {1:'',2:'',3:'',4:''});
-                setSelecionado(p.alternativaCorreta || null); // ← CARREGAR A CERTA
+                setSelecionado(p.alternativaCorreta || null);
             }
         };
 
         carregarPergunta();
     }, [quizID, perguntaID]);
 
+    // ===============================
+    // FUNÇÃO DE SALVAR ALTERAÇÕES
+    // ===============================
     const salvarAlteracoes = async () => {
         if (!auth.currentUser) return;
         const uid = auth.currentUser.uid;
@@ -51,8 +55,6 @@ function PerguntaEditor() {
                     ...p, 
                     enunciado, 
                     alternativas: respostas,
-
-                    // SALVA A ALTERNATIVA CERTA
                     alternativaCorreta: selecionado 
                 };
             }
@@ -60,13 +62,33 @@ function PerguntaEditor() {
         });
 
         await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+
+        // ← REDIRECIONA para CriarQuiz após salvar
+        navigate(`/CriarQuiz/${quizID}`);
     };
+
+    // ===============================
+    // AUTOSAVE (debounce 600ms)
+    // ===============================
+    useEffect(() => {
+        if (!auth.currentUser || !pergunta) return;
+
+        const timeout = setTimeout(() => {
+            updateDoc(doc(db, 'usuarios', auth.currentUser.uid, 'quizzes', quizID), {
+                perguntas: [{
+                    ...pergunta,
+                    enunciado,
+                    alternativas: respostas,
+                    alternativaCorreta: selecionado
+                }]
+            }).catch(err => console.error("Erro ao autosalvar pergunta:", err));
+        }, 600);
+
+        return () => clearTimeout(timeout);
+    }, [enunciado, respostas, selecionado]);
 
     return (
         <div className={styles.container}>
-            <p style={{ color: "white", textAlign: "center" }}>
-                Editando Pergunta: {perguntaID}
-            </p>
 
             <div className={styles.fundo}>
                 <textarea

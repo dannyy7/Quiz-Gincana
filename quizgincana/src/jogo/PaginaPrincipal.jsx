@@ -25,8 +25,7 @@ function PaginaPrincipal() {
   const personagem = personagens[posicao];
 
   async function salvarFotoPerfil(url) {
-    if (!user || !user.uid || user.isAnonymous) return;
-
+    if (!user || !user.uid) return; // agora salva para todos, inclusive anônimos
     try {
       const ref = doc(db, "usuarios", user.uid);
       await updateDoc(ref, { fotoPerfil: url });
@@ -47,38 +46,39 @@ function PaginaPrincipal() {
     salvarFotoPerfil(personagens[novaPosicao]);
   }
 
+  // =============================
+  // CARREGAR USUÁRIO E QUIZZES
+  // =============================
   useEffect(() => {
     const stop = ouvirUsuario(async (u) => {
       if (u) {
         const nomeInicial = u.isAnonymous ? "Convidado" : u.displayName || "Carregando...";
         setUser({ ...u, nomeUsuario: nomeInicial });
 
-        if (!u.isAnonymous) {
-          try {
-            const docRef = doc(db, "usuarios", u.uid);
-            const docSnap = await getDoc(docRef);
+        try {
+          const docRef = doc(db, "usuarios", u.uid);
+          const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-              const dados = docSnap.data();
+          if (docSnap.exists()) {
+            const dados = docSnap.data();
 
-              setUser(prev => ({
-                ...prev,
-                nomeUsuario: dados.nomeUsuario,
-                fotoPerfil: dados.fotoPerfil
-              }));
+            setUser(prev => ({
+              ...prev,
+              nomeUsuario: dados.nomeUsuario || nomeInicial,
+              fotoPerfil: dados.fotoPerfil || personagens[0]
+            }));
 
-              // CARREGAR PERSONAGEM SALVO
-              if (dados.fotoPerfil) {
-                const index = personagens.indexOf(dados.fotoPerfil);
-                if (index !== -1) setPosicao(index);
-              }
+            // CARREGAR PERSONAGEM SALVO
+            if (dados.fotoPerfil) {
+              const index = personagens.indexOf(dados.fotoPerfil);
+              if (index !== -1) setPosicao(index);
             }
-
-            const quizzesDoUsuario = await pegarQuizzesUsuario(u.uid);
-            setQuizzes(quizzesDoUsuario);
-          } catch (err) {
-            console.error("Erro ao buscar dados do usuário:", err);
           }
+
+          const quizzesDoUsuario = await pegarQuizzesUsuario(u.uid);
+          setQuizzes(quizzesDoUsuario);
+        } catch (err) {
+          console.error("Erro ao buscar dados do usuário:", err);
         }
       } else {
         setUser(null);
@@ -89,6 +89,9 @@ function PaginaPrincipal() {
     return () => stop();
   }, []);
 
+  // =============================
+  // CRIAR QUIZ
+  // =============================
   async function CriarQuiz() {
     if (!user) return;
 
@@ -114,11 +117,11 @@ function PaginaPrincipal() {
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
       <button className={styles.setadireita} onClick={direita}>
-        <img src='/pagina_principal/pgprincipalsetadireita.png' />
+        <img src='/pagina_principal/pgprincipalsetadireita.png' alt="seta direita" />
       </button>
 
       <button className={styles.setaesquerda} onClick={esquerda}>
-        <img src='/pagina_principal/pgprincipalsetaesquerda.png' />
+        <img src='/pagina_principal/pgprincipalsetaesquerda.png' alt="seta esquerda" />
       </button>
 
       <div className={styles.nomebox}>
@@ -127,12 +130,12 @@ function PaginaPrincipal() {
         </p>
       </div>
 
-      <img className={styles.fotoperfil} src={personagem}></img>
+      <img className={styles.fotoperfil} src={personagem} alt="personagem" />
 
       <p className={styles.paragrafo}>digite o código da sala:</p>
 
       <div className={styles.wrapper}>
-        <img src="/pagina_principal/input.png" alt="img" className={styles.inputImage} />
+        <img src="/pagina_principal/input.png" alt="input" className={styles.inputImage} />
         <input type="number" className={styles.realInput} />
       </div>
 
@@ -141,11 +144,11 @@ function PaginaPrincipal() {
         onMouseLeave={() => setBotao('/pagina_principal/pgprincipaljogar1.png')}
         className={styles.jogar}
       >
-        <img src={botao} />
+        <img src={botao} alt="botão jogar" />
       </button>
 
       <button onClick={() => navigate("/SignUp")}>
-        <img src='/pagina_principal/pgprincipallogar.png' className={styles.logar} />
+        <img src='/pagina_principal/pgprincipallogar.png' className={styles.logar} alt="botão logar" />
       </button>
 
       <h1 className={styles.titulo}>meus quizes</h1>
@@ -170,7 +173,10 @@ function PaginaPrincipal() {
         </div>
       </div>
 
-      <img src='/pagina_principal/loginmensagem.png' className={styles.mensagem} />
+      {/* IMAGEM LOGIN SOMENTE PARA CONVIDADO */}
+      {user?.isAnonymous && (
+        <img src='/pagina_principal/loginmensagem.png' className={styles.mensagem} alt="mensagem de login" />
+      )}
     </div>
   );
 }
