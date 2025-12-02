@@ -147,7 +147,7 @@ function PaginaPrincipal() {
         <img src={botao} alt="botão jogar" />
       </button>
 
-      <button onClick={() => navigate("/SignUp")}>
+      <button onClick={() => navigate("/Login")}>
         <img src='/pagina_principal/pgprincipallogar.png' className={styles.logar} alt="botão logar" />
       </button>
 
