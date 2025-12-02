@@ -66,7 +66,7 @@ function Login() {
       <div className={styles.cont_form}>
         <p>Email</p>
         <div className={styles.forms}>
-          <img src="./signup-login/enteremail.png" alt="email" />
+          <img src="./signup-login/enteremail.png" alt="email" className={styles.emaillockimg} />
           <input
             type="text"
             placeholder="Digite seu Email"
@@ -79,7 +79,7 @@ function Login() {
         <p>Senha</p>
         <div className={styles.forms}>
           <button onClick={ocultarsenha} className={styles.iconimg}>
-            <img src={icon} alt="cadeado" />
+            <img src={icon} alt="cadeado" className={styles.emaillockimg}/>
           </button>
           <input
             type={tipo}
@@ -88,6 +88,9 @@ function Login() {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
+        </div>
+        <div className={styles.registrar}>
+          <button onClick={()=> navigate("")}>Esqueceu a senha?</button>
         </div>
 
         <button onClick={FazerLogin} className={styles.loginbutton}>

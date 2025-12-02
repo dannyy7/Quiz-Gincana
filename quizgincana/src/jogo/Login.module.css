@@ -26,6 +26,35 @@
     justify-content: center;
 }
 
+.loginbox{
+    height: 5vh;
+    width: 15vw;  
+    border: dashed black 2px;  
+}
+
+
+.iconimg{
+    width:3vw;
+    height:5vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+.emaillockimg{
+    width: 3vw;
+    height: 5vh;
+    padding-right: 5px
+}
+
+.forms{
+    display: flex;
+}
+
 .loginbutton{
     width: 9vw;
     height: 6vh;
@@ -53,5 +82,5 @@
     font-weight: 600;
     font-style: normal;
     font-size: 17px;
-    color: #FF0D64;
+    color: #12795C;
 }
