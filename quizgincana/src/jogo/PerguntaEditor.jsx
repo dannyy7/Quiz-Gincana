@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase/bd';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import styles from './PerguntaEditor.module.css';
 
 function PerguntaEditor() {
     const { quizID, perguntaID } = useParams();
+    const navigate = useNavigate(); // ← ADICIONADO
     const [pergunta, setPergunta] = useState(null);
     const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
@@ -61,6 +62,9 @@ function PerguntaEditor() {
         });
 
         await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+
+        // ← REDIRECIONA para CriarQuiz após salvar
+        navigate(`/CriarQuiz/${quizID}`);
     };
 
     // ===============================
@@ -70,8 +74,15 @@ function PerguntaEditor() {
         if (!auth.currentUser || !pergunta) return;
 
         const timeout = setTimeout(() => {
-            salvarAlteracoes().catch(err => console.error("Erro ao autosalvar pergunta:", err));
-        }, 600); // salva 600ms após parar de digitar ou alterar alternativa
+            updateDoc(doc(db, 'usuarios', auth.currentUser.uid, 'quizzes', quizID), {
+                perguntas: [{
+                    ...pergunta,
+                    enunciado,
+                    alternativas: respostas,
+                    alternativaCorreta: selecionado
+                }]
+            }).catch(err => console.error("Erro ao autosalvar pergunta:", err));
+        }, 600);
 
         return () => clearTimeout(timeout);
     }, [enunciado, respostas, selecionado]);

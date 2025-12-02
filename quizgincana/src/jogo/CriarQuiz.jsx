@@ -75,7 +75,7 @@ function CriarQuiz() {
 
         try {
             await updateDoc(ref, { titulo: quiz.titulo });
-            navigate(-1);
+            navigate('/PaginaPrincipal');
         } catch (err) {
             console.error('Erro ao salvar título:', err);
         }
