@@ -129,8 +129,12 @@ function PerguntaEditor() {
                 </div>
 
                 <button onClick={salvarAlteracoes} className={styles.salvar}>
-                    Salvar Alterações
                 </button>
+
+                <div className={styles.boxpeso}>
+                    <label>Peso:</label>
+                    <input type='number'></input>
+                </div>
             </div>
         </div>
     );
