@@ -18,7 +18,10 @@ function PaginaPrincipal() {
   const personagens = [
     '/personagens/p1.png',
     '/personagens/p2.png',
-    '/personagens/p3.png'
+    '/personagens/p3.png',
+    '/personagens/p4.png',
+    '/personagens/p5.png',
+    '/personagens/p6.png'
   ];
 
   const [posicao, setPosicao] = useState(0);
