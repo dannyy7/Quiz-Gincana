@@ -97,7 +97,7 @@ function PerguntaEditor() {
                         value={respostas[1]}
                         onChange={e => handleChange(1, e.target.value)}
                         onFocus={() => setSelecionado(1)}
-                        placeholder="Digite aqui"
+                        placeholder="Digite a alternativa aqui..."
                         className={`${styles.alternativa} ${selecionado===1 ? styles.verde : styles.vermelho}`}
                     />
 
@@ -105,7 +105,7 @@ function PerguntaEditor() {
                         value={respostas[2]}
                         onChange={e => handleChange(2, e.target.value)}
                         onFocus={() => setSelecionado(2)}
-                        placeholder="Digite aqui"
+                        placeholder="Digite a alternativa aqui..."
                         className={`${styles.alternativa} ${selecionado===2 ? styles.verde : styles.vermelho}`}
                     />
                 </div>
@@ -115,7 +115,7 @@ function PerguntaEditor() {
                         value={respostas[3]}
                         onChange={e => handleChange(3, e.target.value)}
                         onFocus={() => setSelecionado(3)}
-                        placeholder="Digite aqui"
+                        placeholder="Digite a alternativa aqui..."
                         className={`${styles.alternativa} ${selecionado===3 ? styles.verde : styles.vermelho}`}
                     />
 
@@ -123,7 +123,7 @@ function PerguntaEditor() {
                         value={respostas[4]}
                         onChange={e => handleChange(4, e.target.value)}
                         onFocus={() => setSelecionado(4)}
-                        placeholder="Digite aqui"
+                        placeholder="Digite a alternativa aqui..."
                         className={`${styles.alternativa} ${selecionado===4 ? styles.verde : styles.vermelho}`}
                     />
                 </div>
