@@ -7,35 +7,26 @@ function Pergunta(){
             <div className={styles.container}>
 
                 <div className={styles.fundo}>
-                    <textarea
-                    className={styles.enunciadoInput}
-                    placeholder="Digite o enunciado..."
-                    />
+                    
+                    <p className="{styles.enunciado}">
+                        enunciado
+                    </p>
 
                     <div className={styles.alternativas}>
-                    <input
-                        type="text"
-                        placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${styles.verde}`} 
-                    />
-                    <input
-                        type="text"
-                        placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${styles.vermelho}`} 
-                    />
-                    </div>
+                    
+                        <div>
+                            <p className={styles.alternativa} >resposta2</p>
+                        </div>
+                        <div>
+                            <p className={styles.alternativa} >resposta2</p>
+                        </div>
+                        <div>
+                            <p className={styles.alternativa} >resposta2</p>
+                        </div>
+                        <div>
+                            <p className={styles.alternativa} >resposta2</p>
+                        </div>
 
-                    <div className={styles.alternativas}>
-                    <input
-                        type="text"
-                        placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${styles.verde}`} 
-                    />
-                    <input
-                        type="text"
-                        placeholder="Digite aqui"
-                        className={`${styles.alternativa} ${styles.vermelho}`} 
-                    />
                     </div>
 
                 </div>
