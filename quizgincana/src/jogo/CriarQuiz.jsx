@@ -101,6 +101,9 @@ function CriarQuiz() {
 
     return (
         <div className={styles.container}>
+
+            <button className={styles.jogar}></button>
+
             <button className={styles.fechar} onClick={handleFechar}>
                 <img src="/criar_quiz/fechar.png" alt="fechar" />
             </button>
