@@ -128,13 +128,19 @@ function PerguntaEditor() {
                     />
                 </div>
 
-                <button onClick={salvarAlteracoes} className={styles.salvar}>
-                </button>
+                <div>
 
-                <div className={styles.boxpeso}>
-                    <label>Peso:</label>
-                    <input type='number'></input>
+                    
+                    <button onClick={salvarAlteracoes} className={styles.salvar}>
+                    </button>
+
+                    <div className={styles.boxpeso}>
+                        <label className={styles.labelpeso}>Peso:</label>
+                        <input type='number' className={styles.pesoinput}></input>
+                    </div>
+
                 </div>
+                <button className={styles.x}><img src="/criar_quiz/fechar.png" /></button>
             </div>
         </div>
     );
