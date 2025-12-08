@@ -117,6 +117,7 @@ function PaginaPrincipal() {
   return (
     <div className={styles.container}>
       <div className={styles.fundo2}></div>
+      <button className={styles.sair}></button>
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
       <button className={styles.setadireita} onClick={direita}>
