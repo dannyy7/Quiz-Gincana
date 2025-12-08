@@ -184,17 +184,17 @@
 .jogar{
     background: url('/criar_quiz/jogar.png')center/cover no-repeat;
     position: absolute;
-    width: 10vw;
-    height:8vh;
+    width: 12vw;
+    height:9vh;
     top: 5vh;
     z-index: 4;
-    right: 5%;
+    right: 6%;
     border: none;
     cursor: pointer;
-    transition: transform 0.1 ease;
+    transition: transform 0.2s ease;
 }
 .jogar:hover{
     background: url('/criar_quiz/jogarhover.png')center/cover no-repeat;
     border: none;
-    scale: 1.1;
+    transform: scale(1.1);
 }

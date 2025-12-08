@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebase/bd';
+import { auth, criarQuiz, db } from '../firebase/bd';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import styles from './PerguntaEditor.module.css';
 
@@ -140,7 +140,7 @@ function PerguntaEditor() {
                     </div>
 
                 </div>
-                <button className={styles.x}><img src="/criar_quiz/fechar.png" /></button>
+                <button className={styles.x} onClick={() => navigate(-1)}><img src="/criar_quiz/fechar.png" /></button>
             </div>
         </div>
     );

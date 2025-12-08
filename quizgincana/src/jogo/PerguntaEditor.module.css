@@ -86,7 +86,7 @@
 .salvar{
   background: url('/criar_quiz/salve.png')center / cover no-repeat;
   position: absolute;
-  top:6%;
+  top:5.7%;
   right: 6%;
   display: flex;
   justify-content: center;
