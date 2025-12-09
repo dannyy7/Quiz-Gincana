@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
-import { ouvirUsuario, db } from "../firebase/firebaseConfig";
+import { ouvirUsuario, db, logout } from "../firebase/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
 
@@ -12,9 +12,6 @@ function PaginaPrincipal() {
   const [user, setUser] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
 
-  // =============================
-  // PERSONAGENS (com salvamento)
-  // =============================
   const personagens = [
     '/personagens/p1.png',
     '/personagens/p2.png',
@@ -28,7 +25,7 @@ function PaginaPrincipal() {
   const personagem = personagens[posicao];
 
   async function salvarFotoPerfil(url) {
-    if (!user || !user.uid) return; // agora salva para todos, inclusive anônimos
+    if (!user || !user.uid) return;
     try {
       const ref = doc(db, "usuarios", user.uid);
       await updateDoc(ref, { fotoPerfil: url });
@@ -49,9 +46,6 @@ function PaginaPrincipal() {
     salvarFotoPerfil(personagens[novaPosicao]);
   }
 
-  // =============================
-  // CARREGAR USUÁRIO E QUIZZES
-  // =============================
   useEffect(() => {
     const stop = ouvirUsuario(async (u) => {
       if (u) {
@@ -71,7 +65,6 @@ function PaginaPrincipal() {
               fotoPerfil: dados.fotoPerfil || personagens[0]
             }));
 
-            // CARREGAR PERSONAGEM SALVO
             if (dados.fotoPerfil) {
               const index = personagens.indexOf(dados.fotoPerfil);
               if (index !== -1) setPosicao(index);
@@ -92,9 +85,6 @@ function PaginaPrincipal() {
     return () => stop();
   }, []);
 
-  // =============================
-  // CRIAR QUIZ
-  // =============================
   async function CriarQuiz() {
     if (!user) return;
 
@@ -103,10 +93,8 @@ function PaginaPrincipal() {
     } else {
       try {
         const novoQuizID = await criarQuiz(user.uid, "Novo Quiz");
-
         const quizzesDoUsuario = await pegarQuizzesUsuario(user.uid);
         setQuizzes(quizzesDoUsuario);
-
         navigate(`/CriarQuiz/${novoQuizID}`);
       } catch (err) {
         console.error("Erro ao criar quiz:", err);
@@ -117,7 +105,23 @@ function PaginaPrincipal() {
   return (
     <div className={styles.container}>
       <div className={styles.fundo2}></div>
-      <button className={styles.sair}></button>
+
+      {/* BOTÃO LOGOUT FUNCIONAL */}
+      <button
+        className={styles.sair}
+        onClick={async () => {
+          try {
+            await logout();
+            setUser(null);
+            setQuizzes([]);
+          } catch (err) {
+            console.error("Erro ao deslogar:", err);
+          }
+        }}
+      >
+        <img src="/pagina_principal/logout.png" alt="Sair" />
+      </button>
+
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
       <button className={styles.setadireita} onClick={direita}>
@@ -129,9 +133,7 @@ function PaginaPrincipal() {
       </button>
 
       <div className={styles.nomebox}>
-        <p className={styles.nome}>
-          {user ? user.nomeUsuario : "Carregando..."}
-        </p>
+        <p className={styles.nome}>{user ? user.nomeUsuario : "Convidado"}</p>
       </div>
 
       <img className={styles.fotoperfil} src={personagem} alt="personagem" />
@@ -177,7 +179,6 @@ function PaginaPrincipal() {
         </div>
       </div>
 
-      {/* IMAGEM LOGIN SOMENTE PARA CONVIDADO */}
       {user?.isAnonymous && (
         <img src='/pagina_principal/loginmensagem.png' className={styles.mensagem} alt="mensagem de login" />
       )}

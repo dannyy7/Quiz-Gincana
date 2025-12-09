@@ -311,10 +311,26 @@
     left: 20%;
     z-index: 2;
 }
-.sair{
+.sair {
   position: absolute;
-  background: url('/pagina_principal/logout.png')center/cover no-repeat;
-  z-index: 6;
-  height: 100px;
-  width: 100px;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  top: 10%;
+  left: 1.5%;
+  position: absolute;
+  width: 10vw;
+  height: auto;
+  cursor: pointer;
+  transition: left 0.3s ease; /* suaviza a mudança de posição */
+}
+
+.sair img{
+  width: 10vw; /* proporcional à tela */
+  height: auto;
+}
+
+.sair:hover {
+  left: 0.5%;
 }
