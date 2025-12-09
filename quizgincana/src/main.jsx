@@ -13,6 +13,7 @@ import CriarQuiz from './jogo/CriarQuiz';
 import PerguntaEditor from './jogo/PerguntaEditor';
 import Pergunta from './jogo/Pergunta';
 import Lobby from './jogo/Lobby';
+import RecupSenha from './jogo/RecupSenha';
 
 // Definição das rotas
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   { path: "/PerguntaEditor/:quizID/:perguntaID", element: <PerguntaEditor /> },
   { path: "/Pergunta", element: <Pergunta /> },
   { path: "/Lobby", element: <Lobby /> },
+  { path: "/RecupSenha", element: <RecupSenha/>}
 ]);
 
 createRoot(document.getElementById('root')).render(

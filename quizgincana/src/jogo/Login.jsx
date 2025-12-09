@@ -90,7 +90,7 @@ function Login() {
           />
         </div>
         <div className={styles.registrar}>
-          <button onClick={()=> navigate("")}>Esqueceu a senha?</button>
+          <button onClick={()=> navigate("/RecupSenha")}>Esqueceu a senha?</button>
         </div>
 
         <button onClick={FazerLogin} className={styles.loginbutton}>
