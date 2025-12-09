@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './CriarQuiz.module.css';
 import { auth, db } from '../firebase/bd';
-import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
     const { quizID } = useParams();
@@ -19,6 +19,9 @@ function CriarQuiz() {
     const [quiz, setQuiz] = useState(null);
     const [perguntas, setPerguntas] = useState([]);
     const [postitAddImg, setPostitAddImg] = useState('');
+    
+    // NOVO: estado para o popup
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
     useEffect(() => {
         const carregarQuiz = async () => {
@@ -64,9 +67,6 @@ function CriarQuiz() {
         }
     };
 
-    // ===============================
-    // SALVAR TÍTULO AO FECHAR
-    // ===============================
     const handleFechar = async () => {
         if (!auth.currentUser || !quiz) return;
 
@@ -81,9 +81,6 @@ function CriarQuiz() {
         }
     };
 
-    // ===============================
-    // AUTOSAVE DO TÍTULO (debounce 600ms)
-    // ===============================
     useEffect(() => {
         if (!auth.currentUser || !quiz) return;
         if (quiz.titulo === undefined) return;
@@ -94,15 +91,35 @@ function CriarQuiz() {
         const timeout = setTimeout(() => {
             updateDoc(ref, { titulo: quiz.titulo })
                 .catch(err => console.error("Erro ao autosalvar título:", err));
-        }, 600); // salva 600ms após parar de digitar
+        }, 600);
 
         return () => clearTimeout(timeout);
     }, [quiz?.titulo]);
+
+    // NOVO: função para excluir quiz
+    const handleExcluirQuiz = async () => {
+        if (!auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+
+        try {
+            const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
+            await deleteDoc(ref); // deleta o quiz
+            setShowConfirmPopup(false);
+            navigate('/PaginaPrincipal'); // volta para a página principal
+        } catch (err) {
+            console.error("Erro ao excluir quiz:", err);
+        }
+    };
 
     return (
         <div className={styles.container}>
 
             <button className={styles.jogar}></button>
+
+            {/* botão excluir abre o popup */}
+            <button className={styles.excluir} onClick={() => setShowConfirmPopup(true)}>
+                <img src="/criar_quiz/lixeira.png" alt="" />
+            </button>
 
             <button className={styles.fechar} onClick={handleFechar}>
                 <img src="/criar_quiz/fechar.png" alt="fechar" />
@@ -137,6 +154,30 @@ function CriarQuiz() {
                     <span className={styles.plusSign}>+</span>
                 </button>
             </div>
+
+            {/* NOVO: popup de confirmação */}
+            {showConfirmPopup && (
+                <div className={styles.popupOverlay}>
+                    <div className={styles.popupContent}>
+                        <h3>Tem certeza que deseja excluir este quiz?</h3>
+                        <div className={styles.popupButtons}>
+                            <button 
+                                className={styles.cancelar} 
+                                onClick={() => setShowConfirmPopup(false)}
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                className={styles.confirmar} 
+                                onClick={handleExcluirQuiz}
+                            >
+                                Excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
