@@ -11,6 +11,7 @@ function PerguntaEditor() {
     const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
     const [enunciado, setEnunciado] = useState('');
+    const [peso, setPeso] = useState(1); // <-- novo estado para peso
 
     function handleChange(id, value) {
         setRespostas(prev => ({ ...prev, [id]: value }));
@@ -31,6 +32,7 @@ function PerguntaEditor() {
                 setEnunciado(p.enunciado || '');
                 setRespostas(p.alternativas || {1:'',2:'',3:'',4:''});
                 setSelecionado(p.alternativaCorreta || null);
+                setPeso(p.peso || 1); // <-- carrega o peso se existir
             }
         };
 
@@ -52,7 +54,8 @@ function PerguntaEditor() {
                     ...p, 
                     enunciado, 
                     alternativas: respostas,
-                    alternativaCorreta: selecionado 
+                    alternativaCorreta: selecionado,
+                    peso // <-- adiciona peso ao salvar
                 };
             }
             return p;
@@ -63,26 +66,27 @@ function PerguntaEditor() {
         navigate(`/CriarQuiz/${quizID}`);
     };
 
+    // Autosave incluindo peso
     useEffect(() => {
         if (!auth.currentUser || !pergunta) return;
 
         const timeout = setTimeout(() => {
             updateDoc(doc(db, 'usuarios', auth.currentUser.uid, 'quizzes', quizID), {
-                perguntas: [{
+                perguntas: [pergunta.id === perguntaID ? {
                     ...pergunta,
                     enunciado,
                     alternativas: respostas,
-                    alternativaCorreta: selecionado
-                }]
+                    alternativaCorreta: selecionado,
+                    peso // <-- inclui peso no autosave
+                } : pergunta]
             }).catch(err => console.error("Erro ao autosalvar pergunta:", err));
         }, 600);
 
         return () => clearTimeout(timeout);
-    }, [enunciado, respostas, selecionado]);
+    }, [enunciado, respostas, selecionado, peso]);
 
     return (
         <div className={styles.container}>
-
             <div className={styles.fundo}>
                 
                 <textarea
@@ -129,18 +133,23 @@ function PerguntaEditor() {
                 </div>
 
                 <div>
-
-                    
                     <button onClick={salvarAlteracoes} className={styles.salvar}>
                     </button>
 
                     <div className={styles.boxpeso}>
                         <label className={styles.labelpeso}>Peso:</label>
-                        <input type='number' className={styles.pesoinput}></input>
+                        <input 
+                            type='number' 
+                            className={styles.pesoinput} 
+                            value={peso} 
+                            onChange={e => setPeso(Number(e.target.value))}
+                        />
                     </div>
-
                 </div>
-                <button className={styles.x} onClick={() => navigate(-1)}><img src="/criar_quiz/fechar.png" /></button>
+
+                <button className={styles.x} onClick={() => navigate(-1)}>
+                    <img src="/criar_quiz/fechar.png" />
+                </button>
             </div>
         </div>
     );

@@ -4,7 +4,8 @@ import {
   signInAnonymously, 
   onAuthStateChanged, 
   createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword 
+  signInWithEmailAndPassword, 
+  signOut 
 } from "firebase/auth";
 import { 
   getFirestore, 
@@ -17,6 +18,7 @@ import {
   getDocs 
 } from "firebase/firestore";
 
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDfXsJMze3HhSonFk8YCStcK4CSkGRtcoY",
   authDomain: "quizgincana.firebaseapp.com",
@@ -28,28 +30,32 @@ const firebaseConfig = {
   measurementId: "G-V815ND8F9K"
 };
 
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
+// ================================
 // AUTENTICAÇÃO
+// ================================
 export const loginAnonimo = () => signInAnonymously(auth);
 export const ouvirUsuario = (callback) => onAuthStateChanged(auth, callback);
 export const criarConta = (email, senha) => createUserWithEmailAndPassword(auth, email, senha);
 export const loginEmail = (email, senha) => signInWithEmailAndPassword(auth, email, senha);
+export const logout = () => signOut(auth);
 
+// ================================
 // USUÁRIOS
-export const salvarUsuario = async (uid, nomeUsuario) => 
+// ================================
+export const salvarUsuario = async (uid, nomeUsuario) => {
   await setDoc(doc(db, "usuarios", uid), { nomeUsuario });
-
-export const pegarUsuario = async (uid) => { 
-  const docSnap = await getDoc(doc(db, "usuarios", uid)); 
-  return docSnap.exists() ? docSnap.data().nomeUsuario : null; 
 };
 
-// ================================
-// SALVAR PERSONAGEM DO USUÁRIO
-// ================================
+export const pegarUsuario = async (uid) => {
+  const docSnap = await getDoc(doc(db, "usuarios", uid));
+  return docSnap.exists() ? docSnap.data().nomeUsuario : null;
+};
+
 export const salvarPersonagem = async (uid, personagemURL) => {
   const userRef = doc(db, "usuarios", uid);
   await updateDoc(userRef, { personagem: personagemURL });
@@ -67,8 +73,28 @@ export const criarQuiz = async (uid, titulo) => {
 export const adicionarPergunta = async (uid, quizID, novaPergunta) => {
   const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
   const quizSnap = await getDoc(quizRef);
+  if (!quizSnap.exists()) { 
+    console.error("Quiz não encontrado"); 
+    return; 
+  }
+
+  // Garantir peso padrão
+  const perguntaComPeso = { peso: 1, ...novaPergunta };
+
+  const perguntasAtualizadas = [...(quizSnap.data().perguntas || []), perguntaComPeso];
+  await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+};
+
+export const atualizarPergunta = async (uid, quizID, perguntaID, atualizacao) => {
+  const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
+  const quizSnap = await getDoc(quizRef);
   if (!quizSnap.exists()) { console.error("Quiz não encontrado"); return; }
-  const perguntasAtualizadas = [...(quizSnap.data().perguntas || []), novaPergunta];
+
+  const quizData = quizSnap.data();
+  const perguntasAtualizadas = quizData.perguntas.map(p => 
+    p.id === perguntaID ? { ...p, ...atualizacao } : p
+  );
+
   await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
 };
 
@@ -105,5 +131,5 @@ export const pegarQuizzesPublicos = async () => {
 export const pegarQuizPublico = async (quizID) => {
   const quizRef = doc(db, "quizzesPublicos", quizID);
   const quizSnap = await getDoc(quizRef);
-  return docSnap.exists() ? { id: quizID, ...docSnap.data() } : null;
+  return quizSnap.exists() ? { id: quizID, ...quizSnap.data() } : null;
 };
