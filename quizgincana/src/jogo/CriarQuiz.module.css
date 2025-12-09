@@ -192,9 +192,79 @@
     border: none;
     cursor: pointer;
     transition: transform 0.2s ease;
+    box-shadow: 4px 4px 1px 2px #071f4870;
+    border-radius: 20px;
 }
 .jogar:hover{
     background: url('/criar_quiz/jogarhover.png')center/cover no-repeat;
     border: none;
-    transform: scale(1.1);
+    transform: scale(1.08);
+    
+}
+
+.excluir{
+    height: 65px;
+    width: 65px;
+    position: absolute;
+    cursor: pointer;
+    top: 83%;
+    right: 8%;
+    background-color: #B73757;
+    border: solid 3px black;
+    border-radius: 20px;
+    box-shadow: 4px 4px 1px 2px #071f4870;
+}
+.excluir img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px; /* opcional */
+    padding: 10px;
+}
+.excluir:hover{
+    transform: scale(1.1) rotate(-1deg);
+    transition: transform 0.15s ease-in-out;
+}
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.popupContent {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.popupButtons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.popupButtons button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.cancelar {
+    background: #ccc;
+}
+
+.confirmar {
+    background: #e74c3c;
+    color: white;
 }
