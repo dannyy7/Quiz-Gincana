@@ -106,7 +106,7 @@ function PaginaPrincipal() {
     <div className={styles.container}>
       <div className={styles.fundo2}></div>
 
-      {/* BOTÃO LOGOUT FUNCIONAL */}
+      {user && !user.isAnonymous && (
       <button
         className={styles.sair}
         onClick={async () => {
@@ -121,6 +121,8 @@ function PaginaPrincipal() {
       >
         <img src="/pagina_principal/logout.png" alt="Sair" />
       </button>
+    )}
+
 
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
