@@ -7,8 +7,20 @@
 
 .container {
   position: relative;
+  display: flex;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background: url('/lobby/fundo2.jpg') center/cover no-repeat;
+  justify-content: center;
+  align-items: center;
+}
+
+.cartas{
+  display: flex;
+}
+
+.carta{
+  height: auto;
+  width: 15vw;
 }

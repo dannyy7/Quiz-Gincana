@@ -24,7 +24,8 @@ const router = createBrowserRouter([
   { path: "/CriarQuiz/:quizID", element: <CriarQuiz /> },
   { path: "/PerguntaEditor/:quizID/:perguntaID", element: <PerguntaEditor /> },
   { path: "/Pergunta", element: <Pergunta /> },
-  { path: "/Lobby", element: <Lobby /> },
+  { path: "/Sala/:codigo", element: <Lobby /> },  // nova rota da sala (lobby)
+  { path: "/Lobby", element: <Lobby /> }, // mantive rota antiga apontando para o mesmo componente
   { path: "/RecupSenha", element: <RecupSenha/>}
 ]);
 

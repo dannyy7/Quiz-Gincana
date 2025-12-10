@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './CriarQuiz.module.css';
 import { auth, db } from '../firebase/bd';
-import { doc, getDoc, updateDoc, arrayUnion, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, deleteDoc, setDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
     const { quizID } = useParams();
@@ -19,8 +19,6 @@ function CriarQuiz() {
     const [quiz, setQuiz] = useState(null);
     const [perguntas, setPerguntas] = useState([]);
     const [postitAddImg, setPostitAddImg] = useState('');
-    
-    // NOVO: estado para o popup
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
     useEffect(() => {
@@ -45,6 +43,58 @@ function CriarQuiz() {
         setPostitAddImg(imgAdd);
     }, [quizID]);
 
+    // Gera um código alfanumérico de 5 letras (A-Z)
+    function gerarCodigoAlfa() {
+        const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let codigo = '';
+        for (let i = 0; i < 5; i++) {
+            codigo += letras.charAt(Math.floor(Math.random() * letras.length));
+        }
+        return codigo;
+    }
+
+    // CRIA SALA no Firestore com código único (baseado no quiz atual)
+    async function criarSala() {
+        if (!auth.currentUser || !quiz) return;
+        const uid = auth.currentUser.uid;
+
+        // gera código e garante unicidade (checa doc com id = código)
+        let codigo = gerarCodigoAlfa();
+        let tentativa = 0;
+        while (tentativa < 10) {
+            const salaRefCheck = doc(db, 'salas', codigo);
+            const salaSnap = await getDoc(salaRefCheck);
+            if (!salaSnap.exists()) break; // código livre
+            codigo = gerarCodigoAlfa();
+            tentativa++;
+        }
+        // se por algum motivo alcançarmos 10 tentativas e ainda existente, aceitaremos o último gerado
+        const salaRef = doc(db, 'salas', codigo);
+
+        try {
+            await setDoc(salaRef, {
+                codigo,
+                quizID,
+                host: uid,
+                jogadores: [
+                    {
+                        uid,
+                        nome: auth.currentUser.displayName || "Host",
+                        pontos: 0
+                    }
+                ],
+                status: "aguardando",
+                criadoEm: Date.now()
+            });
+
+            // redireciona para a sala (rota criada em main.jsx)
+            navigate(`/Sala/${codigo}`);
+        } catch (err) {
+            console.error("Erro ao criar sala:", err);
+            alert("Erro ao criar sala. Tente novamente.");
+        }
+    }
+
     const handleAdicionarPergunta = async () => {
         if (!auth.currentUser || !quiz) return;
         const uid = auth.currentUser.uid;
@@ -55,7 +105,8 @@ function CriarQuiz() {
             img: imagensPostitBase[Math.floor(Math.random() * imagensPostitBase.length)],
             enunciado: '',
             alternativas: {1:'',2:'',3:'',4:''},
-            respostaCorreta: null
+            respostaCorreta: null,
+            peso: 1
         };
 
         try {
@@ -96,16 +147,15 @@ function CriarQuiz() {
         return () => clearTimeout(timeout);
     }, [quiz?.titulo]);
 
-    // NOVO: função para excluir quiz
     const handleExcluirQuiz = async () => {
         if (!auth.currentUser) return;
         const uid = auth.currentUser.uid;
 
         try {
             const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
-            await deleteDoc(ref); // deleta o quiz
+            await deleteDoc(ref);
             setShowConfirmPopup(false);
-            navigate('/PaginaPrincipal'); // volta para a página principal
+            navigate('/PaginaPrincipal');
         } catch (err) {
             console.error("Erro ao excluir quiz:", err);
         }
@@ -114,7 +164,7 @@ function CriarQuiz() {
     return (
         <div className={styles.container}>
 
-            <button className={styles.jogar}></button>
+            <button className={styles.jogar} onClick={criarSala}></button>
 
             {/* botão excluir abre o popup */}
             <button className={styles.excluir} onClick={() => setShowConfirmPopup(true)}>
