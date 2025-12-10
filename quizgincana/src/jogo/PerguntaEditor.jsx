@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { auth, criarQuiz, db } from '../firebase/bd';
+import { auth, db } from '../firebase/bd';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import styles from './PerguntaEditor.module.css';
 
@@ -11,12 +11,13 @@ function PerguntaEditor() {
     const [selecionado, setSelecionado] = useState(null);
     const [respostas, setRespostas] = useState({1:'',2:'',3:'',4:''});
     const [enunciado, setEnunciado] = useState('');
-    const [peso, setPeso] = useState(1); // <-- novo estado para peso
+    const [peso, setPeso] = useState(1);
 
     function handleChange(id, value) {
         setRespostas(prev => ({ ...prev, [id]: value }));
     }
 
+    // CARREGA PERGUNTA
     useEffect(() => {
         const carregarPergunta = async () => {
             if (!auth.currentUser) return;
@@ -27,18 +28,20 @@ function PerguntaEditor() {
 
             const quizData = quizSnap.data();
             const p = quizData.perguntas.find(p => p.id === perguntaID);
+
             if (p) {
                 setPergunta(p);
                 setEnunciado(p.enunciado || '');
                 setRespostas(p.alternativas || {1:'',2:'',3:'',4:''});
-                setSelecionado(p.alternativaCorreta || null);
-                setPeso(p.peso || 1); // <-- carrega o peso se existir
+                setSelecionado(p.respostaCorreta || null);  // <-- corrigido
+                setPeso(p.peso || 1);
             }
         };
 
         carregarPergunta();
     }, [quizID, perguntaID]);
 
+    // SALVAR AO CLICAR NO BOTÃO
     const salvarAlteracoes = async () => {
         if (!auth.currentUser) return;
         const uid = auth.currentUser.uid;
@@ -54,8 +57,8 @@ function PerguntaEditor() {
                     ...p, 
                     enunciado, 
                     alternativas: respostas,
-                    alternativaCorreta: selecionado,
-                    peso // <-- adiciona peso ao salvar
+                    respostaCorreta: selecionado,   // <-- corrigido
+                    peso
                 };
             }
             return p;
@@ -66,20 +69,33 @@ function PerguntaEditor() {
         navigate(`/CriarQuiz/${quizID}`);
     };
 
-    // Autosave incluindo peso
+    // AUTOSAVE (CORRIGIDO — NÃO SOBRESCREVE O ARRAY)
     useEffect(() => {
         if (!auth.currentUser || !pergunta) return;
 
-        const timeout = setTimeout(() => {
-            updateDoc(doc(db, 'usuarios', auth.currentUser.uid, 'quizzes', quizID), {
-                perguntas: [pergunta.id === perguntaID ? {
-                    ...pergunta,
-                    enunciado,
-                    alternativas: respostas,
-                    alternativaCorreta: selecionado,
-                    peso // <-- inclui peso no autosave
-                } : pergunta]
-            }).catch(err => console.error("Erro ao autosalvar pergunta:", err));
+        const timeout = setTimeout(async () => {
+            const uid = auth.currentUser.uid;
+            const quizRef = doc(db, 'usuarios', uid, 'quizzes', quizID);
+            const quizSnap = await getDoc(quizRef);
+            if (!quizSnap.exists()) return;
+
+            const quizData = quizSnap.data();
+
+            const perguntasAtualizadas = quizData.perguntas.map(p =>
+                p.id === perguntaID
+                    ? {
+                        ...p,
+                        enunciado,
+                        alternativas: respostas,
+                        respostaCorreta: selecionado,  // <-- corrigido
+                        peso
+                    }
+                    : p
+            );
+
+            updateDoc(quizRef, { perguntas: perguntasAtualizadas })
+                .catch(err => console.error("Erro ao autosalvar pergunta:", err));
+
         }, 600);
 
         return () => clearTimeout(timeout);
@@ -133,8 +149,7 @@ function PerguntaEditor() {
                 </div>
 
                 <div>
-                    <button onClick={salvarAlteracoes} className={styles.salvar}>
-                    </button>
+                    <button onClick={salvarAlteracoes} className={styles.salvar}></button>
 
                     <div className={styles.boxpeso}>
                         <label className={styles.labelpeso}>Peso:</label>
