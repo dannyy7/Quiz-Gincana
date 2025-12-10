@@ -15,7 +15,8 @@ import {
   collection, 
   addDoc, 
   updateDoc, 
-  getDocs 
+  getDocs,
+  arrayUnion
 } from "firebase/firestore";
 
 // Configuração do Firebase
@@ -73,10 +74,7 @@ export const criarQuiz = async (uid, titulo) => {
 export const adicionarPergunta = async (uid, quizID, novaPergunta) => {
   const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
   const quizSnap = await getDoc(quizRef);
-  if (!quizSnap.exists()) { 
-    console.error("Quiz não encontrado"); 
-    return; 
-  }
+  if (!quizSnap.exists()) { console.error("Quiz não encontrado"); return; }
 
   // Garantir peso padrão
   const perguntaComPeso = { peso: 1, ...novaPergunta };
@@ -133,3 +131,69 @@ export const pegarQuizPublico = async (quizID) => {
   const quizSnap = await getDoc(quizRef);
   return quizSnap.exists() ? { id: quizID, ...quizSnap.data() } : null;
 };
+
+// ================================
+// SALAS (NOVO)
+// ================================
+
+// Gera código alfabético de 5 letras
+export function gerarCodigoSalaAlfa() {
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let codigo = '';
+  for (let i = 0; i < 5; i++) {
+    codigo += letras.charAt(Math.floor(Math.random() * letras.length));
+  }
+  return codigo;
+}
+
+// Cria sala para um quiz (garante unicidade simples)
+export async function criarSalaParaQuiz(quizID, hostUID, hostNome) {
+  let codigo = gerarCodigoSalaAlfa();
+  let tentativa = 0;
+  while (tentativa < 10) {
+    const salaRef = doc(db, 'salas', codigo);
+    const salaSnap = await getDoc(salaRef);
+    if (!salaSnap.exists()) break;
+    codigo = gerarCodigoSalaAlfa();
+    tentativa++;
+  }
+
+  const salaRefFinal = doc(db, 'salas', codigo);
+  await setDoc(salaRefFinal, {
+    codigo,
+    quizID,
+    host: hostUID,
+    jogadores: [
+      {
+        uid: hostUID,
+        nome: hostNome || 'Host',
+        pontos: 0
+      }
+    ],
+    status: 'aguardando',
+    criadoEm: Date.now()
+  });
+
+  return codigo;
+}
+
+// Entrar na sala (adiciona jogador)
+export async function entrarNaSala(codigo, uid, nome) {
+  const salaRef = doc(db, 'salas', codigo);
+  const salaSnap = await getDoc(salaRef);
+  if (!salaSnap.exists()) throw new Error('Sala não encontrada');
+
+  const sala = salaSnap.data();
+  const jaEsta = (sala.jogadores || []).some(j => j.uid === uid);
+  if (!jaEsta) {
+    await updateDoc(salaRef, {
+      jogadores: arrayUnion({
+        uid,
+        nome,
+        pontos: 0
+      })
+    });
+  }
+
+  return salaRef.id;
+}

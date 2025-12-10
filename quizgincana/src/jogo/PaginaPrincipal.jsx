@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react';
 import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
-import { ouvirUsuario, db, logout } from "../firebase/firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ouvirUsuario, db as dbConfig, logout } from "../firebase/firebaseConfig";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
+import { auth, db } from '../firebase/bd';
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
+  const [codigoSala, setCodigoSala] = useState('');
 
   const personagens = [
     '/personagens/p1.png',
@@ -102,6 +104,44 @@ function PaginaPrincipal() {
     }
   }
 
+  // ENTRAR NA SALA digitando o código (alfabético 5 letras)
+  async function entrarNaSala() {
+    const codigo = (codigoSala || '').toUpperCase().trim();
+    if (!codigo || codigo.length !== 5) {
+      alert('Digite um código válido de 5 letras.');
+      return;
+    }
+
+    try {
+      const salaRef = doc(db, 'salas', codigo);
+      const salaSnap = await getDoc(salaRef);
+      if (!salaSnap.exists()) {
+        alert('Sala não encontrada!');
+        return;
+      }
+
+      const salaData = salaSnap.data();
+
+      // adiciona jogador caso não esteja na lista
+      const jaEsta = (salaData.jogadores || []).some(j => j.uid === auth.currentUser.uid);
+
+      if (!jaEsta) {
+        await updateDoc(salaRef, {
+          jogadores: arrayUnion({
+            uid: auth.currentUser.uid,
+            nome: auth.currentUser.displayName || 'Jogador',
+            pontos: 0
+          })
+        });
+      }
+
+      navigate(`/Sala/${codigo}`);
+    } catch (err) {
+      console.error('Erro ao entrar na sala:', err);
+      alert('Erro ao entrar na sala. Tente novamente.');
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.fundo2}></div>
@@ -144,13 +184,21 @@ function PaginaPrincipal() {
 
       <div className={styles.wrapper}>
         <img src="/pagina_principal/input.png" alt="input" className={styles.inputImage} />
-        <input type="number" className={styles.realInput} />
+        <input
+          type="text"
+          className={styles.realInput}
+          value={codigoSala}
+          onChange={e => setCodigoSala(e.target.value)}
+          maxLength={5}
+          placeholder="ABCDE"
+        />
       </div>
 
       <button
         onMouseEnter={() => setBotao('/pagina_principal/pgprincipaljogar2.png')}
         onMouseLeave={() => setBotao('/pagina_principal/pgprincipaljogar1.png')}
         className={styles.jogar}
+        onClick={entrarNaSala}
       >
         <img src={botao} alt="botão jogar" />
       </button>
