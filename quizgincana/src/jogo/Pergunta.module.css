@@ -20,7 +20,7 @@
   flex-direction: column;
 }
 
-/* ENUNCIADO ) */
+/* ENUNCIADO */
 .enunciado {
   width: 91vw;
   height: 35vh;
@@ -34,13 +34,21 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   margin-bottom: 3vh;
 
-  display: block; /* trocar flex por block */
-  text-align: left; /* texto da esquerda para a direita */
-  white-space: pre-wrap; /* mantém quebras de linha */
+  display: block;
+  text-align: left;
+  white-space: pre-wrap;
 }
 
+/* GRID DAS LINHAS */
+.alternativas{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1vh;
+  gap: 1vw;
+}
 
-/* Alternativas */
+/* BASE DAS ALTERNATIVAS */
 .alternativa{
   height: 20vh;
   width: 45vw;
@@ -50,41 +58,53 @@
   font-size: 20px;
   font-family: "Kalam", cursive;
   text-align: center;
-  background-color: rgb(0, 255, 200);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: 0.2s ease;
 }
 
+/* HOVER (só se não estiver travado — controlado no JS) */
+.alternativa:hover {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+}
+
+/* CORES TIPO KAHOOT */
+.cor1 {
+    background-color: #e21b3c; /* vermelho */
+}
+
+.cor2 {
+    background-color: #1368ce; /* azul */
+}
+
+.cor3 {
+    background-color: #d89e00; /* amarelo */
+}
+
+.cor4 {
+    background-color: #26890c; /* verde */
+}
+
+/* ESTADO FINAL */
+.vermelho{
+  background-color: rgb(255, 92, 92) !important;
+}
+.verde{
+  background-color: rgb(143, 255, 143) !important;
+}
+
+/* LIMPAR ENUNCIADO */
 .enunciadoInput:empty::before {
   content: attr(data-placeholder);
   color: #aaa;
 }
 
-
-.alternativa:focus {
-  outline: none;
-  border: solid 1px #00ff37;
-}
-
-.vermelho{
-  background-color: rgb(255, 92, 92);
-}
-
-.verde{
-  background-color: rgb(143, 255, 143);
-}
-
-.alternativas{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1vh;
-  gap: 1vw;
-}
-
-/* Efeito foco no enunciado */
 .enunciadoInput:focus {
   background-color:#f5f5f5 ;
   outline: none;
-
 }
-
-

@@ -4,8 +4,6 @@ import { auth, db } from "../firebase/bd";
 import { doc, getDoc } from "firebase/firestore";
 import styles from "./Pergunta.module.css";
 
-
-
 function Pergunta(){
 
     const { quizId, perguntaId } = useParams();
@@ -18,7 +16,6 @@ function Pergunta(){
     const [selecionado, setSelecionado] = useState(null);
     const [travado, setTravado] = useState(false);
 
-    //Carregar pergunta
     useEffect(() => {
         const carregarPergunta = async () => {
             if(!uid) return; 
@@ -36,7 +33,6 @@ function Pergunta(){
         carregarPergunta();
     }, [quizId, perguntaId, uid]);
 
-    //Timer
     useEffect(() => {
         if(!pergunta) return;
         if (travado) return;
@@ -61,14 +57,12 @@ function Pergunta(){
         setTravado(false);
     }, [perguntaId]);
 
-    //Escolher resposta
     const escolherResp = (id) => {
         if (travado) return;
         setSelecionado(id);
         setTravado(true);
     };
 
-    //Avançar quando o tempo acabar
     useEffect(() => {
         if (!travado) return;
 
@@ -79,28 +73,23 @@ function Pergunta(){
         return () => clearTimeout(timeout);
     }, [travado, navigate, quizId, perguntaId]);
 
-    //if (!pergunta) {
-    //    return <div>Carregando pergunta...</div>;
-    //}
 
-    //Caso nao tenha carregado a pergunta ainda ele exibe o modo teste
+    // -------------------- MODO TESTE --------------------
     if (!pergunta) {
 
-    const perguntaTeste = {
-        enunciado: "Carregando perrgunta...",
-        alternativaCorreta: 1,
-        peso: 0, 
-        alternativas: {
-            1: "Alternativa 1",
-            2: "Alternativa 2",
-            3: "Alternativa 3",
-            4: "Alternativa 4",
-        }
-    };
+        const perguntaTeste = {
+            enunciado: "Carregando pergunta...",
+            alternativaCorreta: 1,
+            peso: 0, 
+            alternativas: {
+                1: "Alternativa 1",
+                2: "Alternativa 2",
+                3: "Alternativa 3",
+                4: "Alternativa 4",
+            }
+        };
 
-
-    return (
-        <div>
+        return (
             <div className={styles.container}>
                 <div className={styles.fundo}>
                     <div className={styles.enunciado}>
@@ -116,6 +105,8 @@ function Pergunta(){
                                 onClick={() => escolherResp(id)}
                                 className={`
                                     ${styles.alternativa}
+                                    ${styles.hover}
+                                    ${styles["cor" + id]}
                                     ${
                                         travado && selecionado === id
                                             ? id === perguntaTeste.alternativaCorreta
@@ -136,7 +127,9 @@ function Pergunta(){
                                 key={id}
                                 onClick={() => escolherResp(id)}
                                 className={`
-                                    ${styles.alternativa} 
+                                    ${styles.alternativa}
+                                    ${styles.hover}
+                                    ${styles["cor" + id]}
                                     ${
                                         travado && selecionado === id
                                             ? id === perguntaTeste.alternativaCorreta
@@ -150,63 +143,67 @@ function Pergunta(){
                             </div>
                         ))}
                     </div>
-
                 </div>
+            </div>
+        );
+    }
+
+    // -------------------- MODO NORMAL --------------------
+    return(
+        <div className={styles.container}>
+            <div className={styles.fundo}>
+                
+                <div className={styles.enunciado}>
+                    <strong>Timer: {tempoRestante}s</strong>
+                    <br /><br />
+                    {pergunta.enunciado}
+                </div>
+
+                <div className={styles.alternativas}>
+                    {[1,2].map(id => (
+                        <div
+                            key={id}
+                            onClick={() => escolherResp(id)}
+                            className={`
+                                ${styles.alternativa}
+                                ${styles.hover}
+                                ${styles["cor" + id]}
+                                ${
+                                    travado && selecionado === id 
+                                        ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho )
+                                        : ""
+                                }
+                            `}
+                        >
+                            {pergunta.alternativas[id]}
+                        </div>
+                    ))}
+                </div>
+
+                <div className={styles.alternativas}>
+                    {[3,4].map(id => (
+                        <div
+                            key={id}
+                            onClick={() => escolherResp(id)}
+                            className={`
+                                ${styles.alternativa}
+                                ${styles.hover}
+                                ${styles["cor" + id]}
+                                ${
+                                    travado && selecionado === id 
+                                        ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho )
+                                        : ""
+                                }
+                            `}
+                        >
+                            {pergunta.alternativas[id]}
+                        </div>
+                    ))}
+                </div>
+
             </div>
         </div>
     );
-}
-
-
-    return(
-        <div>
-
-            <div className={styles.container}>
-
-                <div className={styles.fundo}>
-
-
-                    
-                    <div className={styles.enunciado}>
-                        <strong>Timer: {tempoRestante}s</strong>
-                        <br /><br />
-                        {pergunta.enunciado}
-                    </div>
-
-                    <div className={styles.alternativas}>
-                        {[1,2].map(id => (
-                            <div
-                                key={id}
-                                onClick={() => escolherResp(id)}
-                                className={`${styles.alternativa}
-                                    ${travado && selecionado === id ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho ) : ""}
-                                `}
-                            >
-                                {pergunta.alternativas[id]}
-                            </div>
-                        ))}
-                       
-                    </div>
-                    <div className={styles.alternativas}>
-                        {[3,4].map(id => (
-                            <div
-                                key={id}
-                                onClick={() => escolherResp(id)}
-                                className={`${styles.alternativa}
-                                    ${travado && selecionado === id ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho ) : ""}
-                                `}
-                            >
-                                {pergunta.alternativas[id]}
-                            </div>
-                        ))}
-                    </div>
-
-                </div>
-                </div>
-
-            
-        </div>
-    )
 }
 
 export default Pergunta;
