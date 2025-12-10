@@ -50,8 +50,8 @@ function RecupSenha() {
     return(
         <div className={styles.container}>
               <div className={styles.cont_form}>
-                <h1>Recuperar Senha</h1>
-                <h2>Informe o e-mail cadastrado</h2>
+                <h1 className={styles.titulo}>Recuperar Senha</h1>
+                <h2 className= {styles.subtitulo}> Informe o e-mail cadastrado</h2>
 
                 <p>Email</p>
                 <div className={styles.forms}>
@@ -65,7 +65,7 @@ function RecupSenha() {
                   />
                 </div>
 
-                <button onClick={handleSubmit} >{progresso ? "Enviando..." : "Enviar"}</button>
+                <button onClick={handleSubmit} className={styles.enviarbutton}>{progresso ? "Enviando..." : "Enviar"}</button>
 
                 {mensagem && <p className={styles.mensagem}>{mensagem}</p>}
                 { erro && <p className={styles.erro}>{erro}</p> }
