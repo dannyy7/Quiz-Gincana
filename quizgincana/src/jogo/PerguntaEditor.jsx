@@ -41,6 +41,28 @@ function PerguntaEditor() {
         carregarPergunta();
     }, [quizID, perguntaID]);
 
+    //EXCLUIR PERGUNTA
+
+    const excluirPergunta = async () => {
+        if (!auth.currentUser) return;
+        const uid = auth.currentUser.uid;
+
+        try {
+            const quizRef = doc(db, 'usuarios', uid, 'quizzes', quizID);
+            const quizSnap = await getDoc(quizRef);
+            if (!quizSnap.exists()) return;
+
+            const quizData = quizSnap.data();
+            const perguntasAtualizadas = quizData.perguntas.filter(p => p.id !== perguntaID);
+
+            await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+
+            navigate(`/CriarQuiz/${quizID}`);
+        } catch (err) {
+            console.error("Erro ao excluir pergunta:", err);
+        }
+    }
+
     // SALVAR AO CLICAR NO BOTÃO
     const salvarAlteracoes = async () => {
         if (!auth.currentUser) return;
@@ -149,15 +171,23 @@ function PerguntaEditor() {
                 </div>
 
                 <div>
+                    <button onClick={excluirPergunta} className={styles.excluir}>
+                        <img src="/criar_quiz/lixeira.png" alt="Excluir" />
+                    </button>
+
                     <button onClick={salvarAlteracoes} className={styles.salvar}></button>
 
                     <div className={styles.boxpeso}>
-                        <label className={styles.labelpeso}>Peso:</label>
+                        <label className={styles.labelpeso}>Pontos:</label>
                         <input 
                             type='number' 
                             className={styles.pesoinput} 
-                            value={peso} 
-                            onChange={e => setPeso(Number(e.target.value))}
+                            value={peso}
+                            onChange={e => {
+                                    const n = e.target.value;
+                                    if (n.length <=3) setPeso(Number(n));
+                                }
+                            }
                         />
                     </div>
                 </div>
