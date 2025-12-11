@@ -9,7 +9,7 @@ function Lobby() {
     const navigate = useNavigate();
     const [sala, setSala] = useState(null);
 
-    // CARTAS ALEATÓRIAS
+    // CARTAS
     const cartasBase = [
         '/lobby/carta1.png',
         '/lobby/carta2.png',
@@ -21,22 +21,14 @@ function Lobby() {
     const [cartasSorteadas, setCartasSorteadas] = useState([]);
 
     useEffect(() => {
-        const sorteio = cartasBase[Math.floor(Math.random() * cartasBase.length)];
-        setCartaAtual(sorteio);
+        const sorteada = cartasBase[Math.floor(Math.random() * cartasBase.length)];
+        setCartaAtual(sorteada);
 
-        const copia = [...cartasBase];
-        const embaralhadas = [];
-
-        while (copia.length) {
-            const i = Math.floor(Math.random() * copia.length);
-            embaralhadas.push(copia[i]);
-            copia.splice(i, 1);
-        }
-
+        const embaralhadas = [...cartasBase].sort(() => Math.random() - 0.5);
         setCartasSorteadas(embaralhadas);
     }, []);
 
-    // FIRESTORE / SALAS
+    // FIRESTORE
     useEffect(() => {
         if (!codigo) return;
 
@@ -88,7 +80,7 @@ function Lobby() {
                 <img src={cartaAtual} alt="Carta" className={styles.cartaAtual} />
             )}
 
-            {/* CARTAS AO FUNDO */}
+            {/* CARTAS DE FUNDO */}
             <div className={styles.cartas}>
                 {cartasSorteadas.map((c, i) => (
                     <img key={i} src={c} className={styles.carta} />
@@ -100,19 +92,35 @@ function Lobby() {
                 <h3>Jogadores conectados:</h3>
 
                 <ul>
-                    {sala.jogadores?.map(j => (
-                        <li key={j.uid} className={styles.jogadorItem}>
-                            <img 
-                                src={j.personagem || "/defaultUser.png"} 
-                                className={styles.avatar}
-                                alt="Foto"
-                            />
+                    {sala.jogadores?.map(j => {
+                        console.log("🔎 Personagem recebido:", j.personagem);
 
-                            <span>{j.nome}</span>
+                        // GARANTIA ABSOLUTA DE STRING VÁLIDA
+                        const personagemFinal = 
+                            typeof j.personagem === "string" && j.personagem.trim() !== ""
+                                ? j.personagem
+                                : "/personagens/p3.png";
 
-                            {j.uid === sala.host && <strong> (Host)</strong>}
-                        </li>
-                    ))}
+                        console.log("✅ Personagem usado:", personagemFinal);
+
+                        return (
+                            <li key={j.uid} className={styles.jogadorItem}>
+                                <img
+                                    src={personagemFinal}
+                                    className={styles.avatar}
+                                    alt="Foto"
+                                    onError={(e) => {
+                                        console.log("❌ ERRO AO CARREGAR IMG:", personagemFinal);
+                                        e.target.src = "/personagens/p2.png";
+                                    }}
+                                />
+
+                                <span>{j.nome}</span>
+
+                                {j.uid === sala.host && <strong> (Host)</strong>}
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
 
@@ -123,7 +131,7 @@ function Lobby() {
                 </button>
             )}
 
-            <button 
+            <button
                 className={styles.voltar}
                 onClick={() => navigate("/PaginaPrincipal")}
             >

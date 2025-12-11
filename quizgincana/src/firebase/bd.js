@@ -53,7 +53,7 @@ export const logout = () => signOut(auth);
 // USUÁRIOS
 // ===============================
 export const salvarUsuario = async (uid, nomeUsuario) => {
-  await setDoc(doc(db, "usuarios", uid), { nomeUsuario });
+  await setDoc(doc(db, "usuarios", uid), { nomeUsuario }, { merge: true });
 };
 
 export const pegarUsuario = async (uid) => {
@@ -151,7 +151,7 @@ export async function criarSalaParaQuiz(quizID, hostUID, hostNome) {
       {
         uid: hostUID,
         nome: hostNome,
-        personagem: personagemHost || null,
+        personagem: personagemHost || "/personagens/default.png", // 🔥 NUNCA MAIS FICA NULL
         pontos: 0
       }
     ],
@@ -178,7 +178,7 @@ export async function entrarNaSala(codigo, uid, nome) {
       jogadores: arrayUnion({
         uid,
         nome,
-        personagem: personagem || null,
+        personagem: personagem || "/personagens/default.png", // 🔥 GARANTIDO
         pontos: 0
       })
     });
