@@ -1,11 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { 
-  getAuth, 
-  signInAnonymously, 
-  onAuthStateChanged, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut 
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
 } from "firebase/auth";
 import { 
   getFirestore, 
@@ -19,7 +19,9 @@ import {
   arrayUnion
 } from "firebase/firestore";
 
-// Configuração do Firebase
+// ===============================
+// CONFIG FIREBASE
+// ===============================
 const firebaseConfig = {
   apiKey: "AIzaSyDfXsJMze3HhSonFk8YCStcK4CSkGRtcoY",
   authDomain: "quizgincana.firebaseapp.com",
@@ -31,23 +33,25 @@ const firebaseConfig = {
   measurementId: "G-V815ND8F9K"
 };
 
-// Inicializa Firebase
+// ===============================
+// FIREBASE INIT
+// ===============================
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-// ================================
+// ===============================
 // AUTENTICAÇÃO
-// ================================
+// ===============================
 export const loginAnonimo = () => signInAnonymously(auth);
 export const ouvirUsuario = (callback) => onAuthStateChanged(auth, callback);
 export const criarConta = (email, senha) => createUserWithEmailAndPassword(auth, email, senha);
 export const loginEmail = (email, senha) => signInWithEmailAndPassword(auth, email, senha);
 export const logout = () => signOut(auth);
 
-// ================================
+// ===============================
 // USUÁRIOS
-// ================================
+// ===============================
 export const salvarUsuario = async (uid, nomeUsuario) => {
   await setDoc(doc(db, "usuarios", uid), { nomeUsuario });
 };
@@ -58,53 +62,42 @@ export const pegarUsuario = async (uid) => {
 };
 
 export const salvarPersonagem = async (uid, personagemURL) => {
-  const userRef = doc(db, "usuarios", uid);
-  await updateDoc(userRef, { personagem: personagemURL });
+  const ref = doc(db, "usuarios", uid);
+  await updateDoc(ref, { personagem: personagemURL });
 };
 
-// ================================
+export const pegarPersonagem = async (uid) => {
+  const snap = await getDoc(doc(db, "usuarios", uid));
+  return snap.exists() ? snap.data().personagem : null;
+};
+
+// ===============================
 // QUIZZES DO USUÁRIO
-// ================================
+// ===============================
 export const criarQuiz = async (uid, titulo) => {
-  const quizzesRef = collection(db, "usuarios", uid, "quizzes");
-  const docRef = await addDoc(quizzesRef, { titulo, criadoEm: new Date(), perguntas: [] });
+  const ref = collection(db, "usuarios", uid, "quizzes");
+  const docRef = await addDoc(ref, { titulo, criadoEm: new Date(), perguntas: [] });
   return docRef.id;
 };
 
 export const adicionarPergunta = async (uid, quizID, novaPergunta) => {
-  const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
-  const quizSnap = await getDoc(quizRef);
-  if (!quizSnap.exists()) { console.error("Quiz não encontrado"); return; }
+  const ref = doc(db, "usuarios", uid, "quizzes", quizID);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
 
-  // Garantir peso padrão
-  const perguntaComPeso = { peso: 1, ...novaPergunta };
-
-  const perguntasAtualizadas = [...(quizSnap.data().perguntas || []), perguntaComPeso];
-  await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
-};
-
-export const atualizarPergunta = async (uid, quizID, perguntaID, atualizacao) => {
-  const quizRef = doc(db, "usuarios", uid, "quizzes", quizID);
-  const quizSnap = await getDoc(quizRef);
-  if (!quizSnap.exists()) { console.error("Quiz não encontrado"); return; }
-
-  const quizData = quizSnap.data();
-  const perguntasAtualizadas = quizData.perguntas.map(p => 
-    p.id === perguntaID ? { ...p, ...atualizacao } : p
-  );
-
-  await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+  const perguntasAtualizadas = [...(snap.data().perguntas || []), novaPergunta];
+  await updateDoc(ref, { perguntas: perguntasAtualizadas });
 };
 
 export const pegarQuizzesUsuario = async (uid) => {
-  const quizzesRef = collection(db, "usuarios", uid, "quizzes");
-  const snapshot = await getDocs(quizzesRef);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const ref = collection(db, "usuarios", uid, "quizzes");
+  const snap = await getDocs(ref);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// ================================
+// ===============================
 // QUIZZES PÚBLICOS
-// ================================
+// ===============================
 export const criarQuizPublico = async (titulo) => {
   const ref = collection(db, "quizzesPublicos");
   const docRef = await addDoc(ref, { titulo, criadoEm: new Date(), perguntas: [] });
@@ -112,88 +105,84 @@ export const criarQuizPublico = async (titulo) => {
 };
 
 export const adicionarPerguntaPublica = async (quizID, novaPergunta) => {
-  const quizRef = doc(db, "quizzesPublicos", quizID);
-  const quizSnap = await getDoc(quizRef);
-  if (!quizSnap.exists()) { console.error("Quiz público não encontrado"); return; }
+  const ref = doc(db, "quizzesPublicos", quizID);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
 
-  const perguntasAtualizadas = [...(quizSnap.data().perguntas || []), novaPergunta];
-  await updateDoc(quizRef, { perguntas: perguntasAtualizadas });
+  await updateDoc(ref, {
+    perguntas: [...(snap.data().perguntas || []), novaPergunta]
+  });
 };
 
 export const pegarQuizzesPublicos = async () => {
-  const quizzesRef = collection(db, "quizzesPublicos");
-  const snapshot = await getDocs(quizzesRef);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const ref = collection(db, "quizzesPublicos");
+  const snap = await getDocs(ref);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const pegarQuizPublico = async (quizID) => {
-  const quizRef = doc(db, "quizzesPublicos", quizID);
-  const quizSnap = await getDoc(quizRef);
-  return quizSnap.exists() ? { id: quizID, ...quizSnap.data() } : null;
+  const ref = doc(db, "quizzesPublicos", quizID);
+  const snap = await getDoc(ref);
+  return snap.exists() ? { id: quizID, ...snap.data() } : null;
 };
 
-// ================================
-// SALAS (NOVO)
-// ================================
+// ===============================
+// SALAS
+// ===============================
 
-// Gera código alfabético de 5 letras
+// Gerar código
 export function gerarCodigoSalaAlfa() {
   const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let codigo = '';
-  for (let i = 0; i < 5; i++) {
-    codigo += letras.charAt(Math.floor(Math.random() * letras.length));
-  }
-  return codigo;
+  return Array.from({ length: 5 }, () =>
+    letras.charAt(Math.floor(Math.random() * letras.length))
+  ).join('');
 }
 
-// Cria sala para um quiz (garante unicidade simples)
+// Criar sala
 export async function criarSalaParaQuiz(quizID, hostUID, hostNome) {
-  let codigo = gerarCodigoSalaAlfa();
-  let tentativa = 0;
-  while (tentativa < 10) {
-    const salaRef = doc(db, 'salas', codigo);
-    const salaSnap = await getDoc(salaRef);
-    if (!salaSnap.exists()) break;
-    codigo = gerarCodigoSalaAlfa();
-    tentativa++;
-  }
+  const codigo = gerarCodigoSalaAlfa();
+  const personagemHost = await pegarPersonagem(hostUID);
 
-  const salaRefFinal = doc(db, 'salas', codigo);
-  await setDoc(salaRefFinal, {
+  await setDoc(doc(db, "salas", codigo), {
     codigo,
     quizID,
     host: hostUID,
     jogadores: [
       {
         uid: hostUID,
-        nome: hostNome || 'Host',
+        nome: hostNome,
+        personagem: personagemHost || null,
         pontos: 0
       }
     ],
-    status: 'aguardando',
+    status: "aguardando",
     criadoEm: Date.now()
   });
 
   return codigo;
 }
 
-// Entrar na sala (adiciona jogador)
+// Entrar na sala
 export async function entrarNaSala(codigo, uid, nome) {
-  const salaRef = doc(db, 'salas', codigo);
-  const salaSnap = await getDoc(salaRef);
-  if (!salaSnap.exists()) throw new Error('Sala não encontrada');
+  const ref = doc(db, "salas", codigo);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error("Sala não encontrada");
 
-  const sala = salaSnap.data();
-  const jaEsta = (sala.jogadores || []).some(j => j.uid === uid);
-  if (!jaEsta) {
-    await updateDoc(salaRef, {
+  const personagem = await pegarPersonagem(uid);
+
+  const sala = snap.data();
+  const existe = sala.jogadores.some(j => j.uid === uid);
+
+  if (!existe) {
+    await updateDoc(ref, {
       jogadores: arrayUnion({
         uid,
         nome,
+        personagem: personagem || null,
         pontos: 0
       })
     });
   }
 
-  return salaRef.id;
+  return codigo;
 }

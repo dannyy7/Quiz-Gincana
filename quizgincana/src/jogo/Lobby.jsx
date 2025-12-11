@@ -9,7 +9,7 @@ function Lobby() {
     const navigate = useNavigate();
     const [sala, setSala] = useState(null);
 
-    // ====== CARTAS ALEATÓRIAS DO LOBBY ======
+    // CARTAS ALEATÓRIAS
     const cartasBase = [
         '/lobby/carta1.png',
         '/lobby/carta2.png',
@@ -21,60 +21,59 @@ function Lobby() {
     const [cartasSorteadas, setCartasSorteadas] = useState([]);
 
     useEffect(() => {
-        // sorteia a carta principal
         const sorteio = cartasBase[Math.floor(Math.random() * cartasBase.length)];
         setCartaAtual(sorteio);
 
-        // embaralha as cartas para o display
-        const cartasDisponiveis = [...cartasBase];
-        const cartasSelecionadas = [];
+        const copia = [...cartasBase];
+        const embaralhadas = [];
 
-        while (cartasDisponiveis.length > 0) {
-            const index = Math.floor(Math.random() * cartasDisponiveis.length);
-            cartasSelecionadas.push(cartasDisponiveis[index]);
-            cartasDisponiveis.splice(index, 1);
+        while (copia.length) {
+            const i = Math.floor(Math.random() * copia.length);
+            embaralhadas.push(copia[i]);
+            copia.splice(i, 1);
         }
 
-        setCartasSorteadas(cartasSelecionadas);
+        setCartasSorteadas(embaralhadas);
     }, []);
 
-    // ====== FIRESTORE / SALAS ======
+    // FIRESTORE / SALAS
     useEffect(() => {
         if (!codigo) return;
-        const ref = doc(db, 'salas', codigo);
 
-        const unsubscribe = onSnapshot(ref, (snap) => {
+        const ref = doc(db, "salas", codigo);
+
+        const unsub = onSnapshot(ref, snap => {
             if (!snap.exists()) {
                 setSala(null);
                 return;
             }
-            setSala(snap.data());
 
             const data = snap.data();
-            if (data.status === 'iniciado' && data.quizID) {
+            setSala(data);
+
+            if (data.status === "iniciado" && data.quizID) {
                 navigate(`/Jogo/${data.quizID}/${codigo}`);
             }
         });
 
-        return () => unsubscribe();
+        return () => unsub();
     }, [codigo]);
 
     if (!sala) {
         return (
             <div className={styles.container}>
-                <p>Sala não encontrada ou carregando...</p>
+                <p>Carregando sala...</p>
             </div>
         );
     }
 
     const iniciarJogo = async () => {
         if (sala.host !== auth.currentUser.uid) {
-            alert('Apenas o host pode iniciar o jogo.');
+            alert("Apenas o host pode iniciar.");
             return;
         }
 
-        const ref = doc(db, 'salas', codigo);
-        await updateDoc(ref, { status: 'iniciado' });
+        await updateDoc(doc(db, "salas", codigo), { status: "iniciado" });
     };
 
     return (
@@ -84,39 +83,52 @@ function Lobby() {
                 <p>Status: {sala.status}</p>
             </div>
 
-            {/* === CARTAS ALEATÓRIAS === */}
-            {cartaAtual && <img src={cartaAtual} alt="Carta aleatória" className={styles.cartaAtual} />}
+            {/* CARTA CENTRAL */}
+            {cartaAtual && (
+                <img src={cartaAtual} alt="Carta" className={styles.cartaAtual} />
+            )}
+
+            {/* CARTAS AO FUNDO */}
             <div className={styles.cartas}>
-                {cartasSorteadas.map((carta, index) => (
-                    <div key={index} className={styles.cartaWrapper}>
-                        <img src={carta} alt={`Carta ${index + 1}`} className={styles.carta} />
-                    </div>
+                {cartasSorteadas.map((c, i) => (
+                    <img key={i} src={c} className={styles.carta} />
                 ))}
             </div>
 
+            {/* JOGADORES */}
             <div className={styles.jogadoresBox}>
                 <h3>Jogadores conectados:</h3>
+
                 <ul>
-                    {sala.jogadores && sala.jogadores.map(j => (
+                    {sala.jogadores?.map(j => (
                         <li key={j.uid} className={styles.jogadorItem}>
+                            <img 
+                                src={j.personagem || "/defaultUser.png"} 
+                                className={styles.avatar}
+                                alt="Foto"
+                            />
+
                             <span>{j.nome}</span>
+
                             {j.uid === sala.host && <strong> (Host)</strong>}
                         </li>
                     ))}
                 </ul>
             </div>
 
+            {/* BOTÃO DO HOST */}
             {sala.host === auth.currentUser.uid && (
-                <div className={styles.actions}>
-                    <button className={styles.iniciar} onClick={iniciarJogo}>
-                        Iniciar Jogo
-                    </button>
-                </div>
+                <button className={styles.iniciar} onClick={iniciarJogo}>
+                    Iniciar Jogo
+                </button>
             )}
 
-            <div className={styles.voltar}>
-                <button onClick={() => navigate('/PaginaPrincipal')}>Voltar</button>
-            </div>
+            <button 
+                className={styles.voltar}
+                onClick={() => navigate("/PaginaPrincipal")}
+            >
+                Voltar
+            </button>
         </div>
     );
 }

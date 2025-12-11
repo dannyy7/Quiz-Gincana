@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .container {
@@ -14,13 +13,66 @@
   background: url('/lobby/fundo2.jpg') center/cover no-repeat;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
-.cartas{
+.cartas {
   display: flex;
+  gap: 10px;
 }
 
-.carta{
-  height: auto;
+.carta {
   width: 15vw;
+  height: auto;
+}
+
+.salaHeader {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.jogadoresBox {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255,255,255,0.9);
+  width: 60vw;
+  border-radius: 10px;
+}
+
+.jogadorItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.iniciar {
+  margin-top: 15px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: green;
+  color: #fff;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.voltar {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: red;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
 }
