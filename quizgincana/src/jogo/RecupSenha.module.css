@@ -11,6 +11,25 @@
     justify-content: center;
 }
 
+.fechar{
+    height: 75px;
+    width: 75px;
+    position: absolute;
+    top: 5vh;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.fechar:hover{
+    transform: scale(1.1);
+}
+
 .cont_form {
     position: relative;
     display: flex;
