@@ -73,7 +73,6 @@
     align-items: center;
     justify-content: space-around;
     gap: 30px;
-    background-color: red;
 }
 
 .primeiro{
@@ -91,33 +90,35 @@
 }
 
 .terceiro{
-    height: 45%;
+    height: 40%;
     width: 20%;
     background-color: #cd7f32;
     align-self: flex-end;
 }
 
 .person1{
-    height: 10vh;
-    width: 20%;
-    background-color: rgb(148, 148, 255);
+    height: 28vh;
+    width: 28%;
+    border: solid 3px blue;
     position: absolute;
-
+    bottom: 60%;
+    right: 34.5%;
 }
 
 .person2{
-    height: 10vh;
-    width: 20%;
-    background-color: rgb(59, 59, 255);
+    height: 25vh;
+    width: 23%;
+    border: solid 3px blue;
     position: absolute;
-    bottom: 45%;
-    right: 3.7%;
+    bottom: 50%;
+    right: 73.25%; 
 }
 
 .person3{
-    height: 10vh;
+    height: 22vh;
     width: 20%;
-    background-color: blue;
+    border: solid 3px blue;
     position: absolute;
-
+    bottom: 40%;
+    right: 3.7%;
 }
