@@ -1,0 +1,123 @@
+.container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.row{
+    position: absolute;
+    top: 5vh;
+    right: 31.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 150px;
+}
+
+.tituloWrapper{
+    position: relative;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.postittitulo{
+    width: 100%;
+}
+
+.titulo{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    text-align: center;
+    font-family: "Kalam", cursive;
+    outline: none;
+    font-weight: 700;
+}
+
+.fechar{
+    height: 75px;
+    width: 75px;
+    position: absolute;
+    top: 5vh;
+    left: 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.fechar:hover{
+    transform: scale(1.1);
+}
+
+.podio{
+    height: 70vh;
+    width: 60vw;
+    position: absolute;
+    bottom: 0vh;
+    left: 20vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 30px;
+    background-color: red;
+}
+
+.primeiro{
+    height: 60%;
+    width: 28%;
+    background-color: gold;
+    align-self: flex-end;
+}
+
+.segundo{
+    height: 50%;
+    width: 23%;
+    background-color: silver;
+    align-self: flex-end;
+}
+
+.terceiro{
+    height: 45%;
+    width: 20%;
+    background-color: #cd7f32;
+    align-self: flex-end;
+}
+
+.person1{
+    height: 10vh;
+    width: 20%;
+    background-color: rgb(148, 148, 255);
+    position: absolute;
+
+}
+
+.person2{
+    height: 10vh;
+    width: 20%;
+    background-color: rgb(59, 59, 255);
+    position: absolute;
+    bottom: 45%;
+    right: 3.7%;
+}
+
+.person3{
+    height: 10vh;
+    width: 20%;
+    background-color: blue;
+    position: absolute;
+
+}
