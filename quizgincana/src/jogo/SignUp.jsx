@@ -74,6 +74,7 @@ function SignUp() {
             placeholder="Digite seu usuario"
             className={styles.loginbox}
             value={usuario}
+            maxLength={25}
             onChange={(e) => setUsuario(e.target.value)}
           />
         </div>
@@ -86,6 +87,7 @@ function SignUp() {
             placeholder="Digite seu Email"
             className={styles.loginbox}
             value={email}
+            maxLength={74}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -100,6 +102,7 @@ function SignUp() {
             placeholder="Digite sua senha"
             className={styles.loginbox}
             value={senha}
+            maxLength={30}
             onChange={(e) => setSenha(e.target.value)}
           />
         </div>
