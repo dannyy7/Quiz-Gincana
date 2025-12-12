@@ -130,7 +130,8 @@ function PaginaPrincipal() {
           jogadores: arrayUnion({
             uid: auth.currentUser.uid,
             nome: auth.currentUser.displayName || 'Jogador',
-            pontos: 0
+            pontos: 0,
+            personagem: user?.fotoPerfil || personagens[0] //o firebase ainda nao busca isso no lobby (arrumar)
           })
         });
       }
