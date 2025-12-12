@@ -4,13 +4,13 @@ import { auth, db } from "../firebase/bd";
 import { doc, getDoc } from "firebase/firestore";
 import styles from "./Pergunta.module.css";
 
-function Pergunta(){
+function Pergunta() {
 
     const { quizId, perguntaId } = useParams();
     const navigate = useNavigate();
 
     const uid = auth.currentUser?.uid;
-    
+
     const [pergunta, setPergunta] = useState(null);
     const [tempoRestante, setTempoRestante] = useState(30);
     const [selecionado, setSelecionado] = useState(null);
@@ -18,7 +18,7 @@ function Pergunta(){
 
     useEffect(() => {
         const carregarPergunta = async () => {
-            if(!uid) return; 
+            if (!uid) return;
 
             const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
             const snap = await getDoc(quizRef);
@@ -26,16 +26,17 @@ function Pergunta(){
             if (!snap.exists()) return;
 
             const quizData = snap.data();
-            const perg = quizData.perguntas.find(p => p.id === perguntaId);
+
+            const perg = quizData.perguntas.find(p => p.id == perguntaId);
 
             setPergunta(perg);
         };
+
         carregarPergunta();
     }, [quizId, perguntaId, uid]);
 
     useEffect(() => {
-        if(!pergunta) return;
-        if (travado) return;
+        if (!pergunta || travado) return;
 
         const id = setInterval(() => {
             setTempoRestante((t) => {
@@ -48,7 +49,7 @@ function Pergunta(){
             });
         }, 1000);
 
-        return (() => clearInterval(id));
+        return () => clearInterval(id);
     }, [pergunta, travado]);
 
     useEffect(() => {
@@ -64,14 +65,35 @@ function Pergunta(){
     };
 
     useEffect(() => {
-        if (!travado) return;
+        if (!travado || !pergunta) return;
 
-        const timeout = setTimeout(() => {
-            navigate(`/quiz/${quizId}/pergunta/${Number(perguntaId) + 1}`);
+        const timeout = setTimeout(async () => {
+
+            const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
+            const snap = await getDoc(quizRef);
+            if (!snap.exists()) return;
+
+            const dados = snap.data();
+            const totalPerguntas = dados.perguntas.length;
+
+            const atual = Number(perguntaId);
+            const proxima = atual + 1;
+
+            if (proxima > totalPerguntas) {
+                navigate(`/podio/${quizId}`);
+                return;
+            }
+
+            if (proxima % 5 === 0) {
+                navigate(`/ranking/${quizId}`);
+                return;
+            }
+
+            navigate(`/quiz/${quizId}/pergunta/${proxima}`);
         }, 1500);
 
         return () => clearTimeout(timeout);
-    }, [travado, navigate, quizId, perguntaId]);
+    }, [travado, pergunta, perguntaId, navigate, quizId, uid]);
 
 
     // -------------------- MODO TESTE --------------------
@@ -80,7 +102,7 @@ function Pergunta(){
         const perguntaTeste = {
             enunciado: "Carregando pergunta...",
             alternativaCorreta: 1,
-            peso: 0, 
+            peso: 0,
             alternativas: {
                 1: "Alternativa 1",
                 2: "Alternativa 2",
@@ -102,19 +124,7 @@ function Pergunta(){
                         {[1, 2].map((id) => (
                             <div
                                 key={id}
-                                onClick={() => escolherResp(id)}
-                                className={`
-                                    ${styles.alternativa}
-                                    ${styles.hover}
-                                    ${styles["cor" + id]}
-                                    ${
-                                        travado && selecionado === id
-                                            ? id === perguntaTeste.alternativaCorreta
-                                                ? styles.verde
-                                                : styles.vermelho
-                                            : ""
-                                    }
-                                `}
+                                className={`${styles.alternativa} ${styles.hover} ${styles["cor" + id]}`}
                             >
                                 {perguntaTeste.alternativas[id]}
                             </div>
@@ -125,19 +135,7 @@ function Pergunta(){
                         {[3, 4].map((id) => (
                             <div
                                 key={id}
-                                onClick={() => escolherResp(id)}
-                                className={`
-                                    ${styles.alternativa}
-                                    ${styles.hover}
-                                    ${styles["cor" + id]}
-                                    ${
-                                        travado && selecionado === id
-                                            ? id === perguntaTeste.alternativaCorreta
-                                                ? styles.verde
-                                                : styles.vermelho
-                                            : ""
-                                    }
-                                `}
+                                className={`${styles.alternativa} ${styles.hover} ${styles["cor" + id]}`}
                             >
                                 {perguntaTeste.alternativas[id]}
                             </div>
@@ -149,10 +147,9 @@ function Pergunta(){
     }
 
     // -------------------- MODO NORMAL --------------------
-    return(
         <div className={styles.container}>
             <div className={styles.fundo}>
-                
+
                 <div className={styles.enunciado}>
                     <strong>Timer: {tempoRestante}s</strong>
                     <br /><br />
@@ -160,7 +157,7 @@ function Pergunta(){
                 </div>
 
                 <div className={styles.alternativas}>
-                    {[1,2].map(id => (
+                    {[1, 2].map(id => (
                         <div
                             key={id}
                             onClick={() => escolherResp(id)}
@@ -169,8 +166,8 @@ function Pergunta(){
                                 ${styles.hover}
                                 ${styles["cor" + id]}
                                 ${
-                                    travado && selecionado === id 
-                                        ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho )
+                                    travado && selecionado === id
+                                        ? (id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho)
                                         : ""
                                 }
                             `}
@@ -181,7 +178,7 @@ function Pergunta(){
                 </div>
 
                 <div className={styles.alternativas}>
-                    {[3,4].map(id => (
+                    {[3, 4].map(id => (
                         <div
                             key={id}
                             onClick={() => escolherResp(id)}
@@ -190,8 +187,8 @@ function Pergunta(){
                                 ${styles.hover}
                                 ${styles["cor" + id]}
                                 ${
-                                    travado && selecionado === id 
-                                        ? ( id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho )
+                                    travado && selecionado === id
+                                        ? (id === pergunta.alternativaCorreta ? styles.verde : styles.vermelho)
                                         : ""
                                 }
                             `}
