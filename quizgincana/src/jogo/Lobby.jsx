@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Lobby.module.css';
 import { db, auth } from '../firebase/bd';
@@ -8,6 +8,7 @@ function Lobby() {
     const { codigo } = useParams();
     const navigate = useNavigate();
     const [sala, setSala] = useState(null);
+    const imgErrorRefs = useRef({});
 
     // CARTAS
     const cartasBase = [
@@ -46,10 +47,13 @@ function Lobby() {
             if (data.status === "iniciado" && data.quizID) {
                 navigate(`/Jogo/${data.quizID}/${codigo}`);
             }
+        }, (err) => {
+            console.error("Erro onSnapshot sala:", err);
+            setSala(null);
         });
 
         return () => unsub();
-    }, [codigo]);
+    }, [codigo, navigate]);
 
     if (!sala) {
         return (
@@ -60,13 +64,29 @@ function Lobby() {
     }
 
     const iniciarJogo = async () => {
+        if (!auth.currentUser) {
+            alert("Usuário não autenticado.");
+            return;
+        }
         if (sala.host !== auth.currentUser.uid) {
             alert("Apenas o host pode iniciar.");
             return;
         }
-
         await updateDoc(doc(db, "salas", codigo), { status: "iniciado" });
     };
+
+    // normaliza caminho e garante fallback
+    function normalizePath(path) {
+        if (!path) return '/personagens/p1.png';
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        return path.startsWith('/') ? path : '/' + path;
+    }
+
+    function handleImgError(e, uid) {
+        if (imgErrorRefs.current[uid]) return;
+        imgErrorRefs.current[uid] = true;
+        e.currentTarget.src = '/personagens/p2.png';
+    }
 
     return (
         <div className={styles.container}>
@@ -83,7 +103,7 @@ function Lobby() {
             {/* CARTAS DE FUNDO */}
             <div className={styles.cartas}>
                 {cartasSorteadas.map((c, i) => (
-                    <img key={i} src={c} className={styles.carta} />
+                    <img key={i} src={c} className={styles.carta} alt={`carta-${i}`} />
                 ))}
             </div>
 
@@ -93,30 +113,20 @@ function Lobby() {
 
                 <ul>
                     {sala.jogadores?.map(j => {
-                        console.log("🔎 Personagem recebido:", j.personagem);
+                        // usamos sempre o campo fotoPerfil salvo na sala
+                        const foto = normalizePath(j.fotoPerfil || j.FotoPerfil || j.personagem || '/personagens/p1.png');
 
-                        // GARANTIA ABSOLUTA DE STRING VÁLIDA
-                        const personagemFinal = 
-                            typeof j.personagem === "string" && j.personagem.trim() !== ""
-                                ? j.personagem
-                                : "/personagens/p5.png";
-
-                        console.log("✅ Personagem usado:", personagemFinal);
+                        console.log("🖼️ Foto de jogador:", j.nome, "→", foto);
 
                         return (
                             <li key={j.uid} className={styles.jogadorItem}>
                                 <img
-                                    src={personagemFinal}
+                                    src={foto}
                                     className={styles.avatar}
-                                    alt="Foto"
-                                    onError={(e) => {
-                                        console.log("❌ ERRO AO CARREGAR IMG:", personagemFinal);
-                                        e.target.src = "/personagens/p2.png";
-                                    }}
+                                    alt={`Foto de ${j.nome}`}
+                                    onError={(e) => handleImgError(e, j.uid)}
                                 />
-
                                 <span>{j.nome}</span>
-
                                 {j.uid === sala.host && <strong> (Host)</strong>}
                             </li>
                         );
@@ -125,7 +135,7 @@ function Lobby() {
             </div>
 
             {/* BOTÃO DO HOST */}
-            {sala.host === auth.currentUser.uid && (
+            {sala.host === auth.currentUser?.uid && (
                 <button className={styles.iniciar} onClick={iniciarJogo}>
                     Iniciar Jogo
                 </button>

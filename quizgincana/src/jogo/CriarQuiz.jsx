@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './CriarQuiz.module.css';
 import { auth, db } from '../firebase/bd';
-import { doc, getDoc, updateDoc, arrayUnion, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
     const { quizID } = useParams();
@@ -58,17 +58,30 @@ function CriarQuiz() {
         if (!auth.currentUser || !quiz) return;
         const uid = auth.currentUser.uid;
 
-        // gera código e garante unicidade (checa doc com id = código)
+        // pega fotoPerfil do usuário no Firestore (onde o personagem está salvo)
+        let fotoPerfilDoUsuario = '/personagens/p1.png'; // fallback
+        try {
+            const userRef = doc(db, 'usuarios', uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                // campo no seu projeto conforme combinado: FotoPerfil (ou fotoPerfil). tentamos ambos
+                fotoPerfilDoUsuario = data.FotoPerfil || data.fotoPerfil || data.personagem || fotoPerfilDoUsuario;
+            }
+        } catch (err) {
+            console.error('Erro ao buscar fotoPerfil do host:', err);
+        }
+
+        // gera código da sala e garante unicidade
         let codigo = gerarCodigoAlfa();
         let tentativa = 0;
         while (tentativa < 10) {
             const salaRefCheck = doc(db, 'salas', codigo);
             const salaSnap = await getDoc(salaRefCheck);
-            if (!salaSnap.exists()) break; // código livre
+            if (!salaSnap.exists()) break;
             codigo = gerarCodigoAlfa();
             tentativa++;
         }
-        // se por algum motivo alcançarmos 10 tentativas e ainda existente, aceitaremos o último gerado
         const salaRef = doc(db, 'salas', codigo);
 
         try {
@@ -80,6 +93,7 @@ function CriarQuiz() {
                     {
                         uid,
                         nome: auth.currentUser.displayName || "Host",
+                        fotoPerfil: fotoPerfilDoUsuario,
                         pontos: 0
                     }
                 ],
@@ -87,7 +101,6 @@ function CriarQuiz() {
                 criadoEm: Date.now()
             });
 
-            // redireciona para a sala (rota criada em main.jsx)
             navigate(`/Sala/${codigo}`);
         } catch (err) {
             console.error("Erro ao criar sala:", err);

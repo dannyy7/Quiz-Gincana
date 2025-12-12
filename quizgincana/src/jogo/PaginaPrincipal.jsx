@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
-import { ouvirUsuario, db as dbConfig, logout } from "../firebase/firebaseConfig";
+import { ouvirUsuario, logout, auth, db } from "../firebase/bd";
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
-import { auth, db } from '../firebase/bd';
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
@@ -30,7 +29,8 @@ function PaginaPrincipal() {
     if (!user || !user.uid) return;
     try {
       const ref = doc(db, "usuarios", user.uid);
-      await updateDoc(ref, { fotoPerfil: url });
+      await updateDoc(ref, { FotoPerfil: url }); // padronizei para FotoPerfil (maiusc) conforme sua preferência
+      setUser(prev => ({ ...prev, fotoPerfil: url }));
     } catch (err) {
       console.error("Erro ao salvar foto de perfil:", err);
     }
@@ -52,7 +52,7 @@ function PaginaPrincipal() {
     const stop = ouvirUsuario(async (u) => {
       if (u) {
         const nomeInicial = u.isAnonymous ? "Convidado" : u.displayName || "Carregando...";
-        setUser({ ...u, nomeUsuario: nomeInicial });
+        setUser({ uid: u.uid, isAnonymous: u.isAnonymous, nomeUsuario: nomeInicial });
 
         try {
           const docRef = doc(db, "usuarios", u.uid);
@@ -61,16 +61,21 @@ function PaginaPrincipal() {
           if (docSnap.exists()) {
             const dados = docSnap.data();
 
+            // priorizamos FotoPerfil (maiusc) e fotoPerfil (case-insensitive)
+            const foto = dados.FotoPerfil || dados.fotoPerfil || dados.personagem || personagens[0];
+
             setUser(prev => ({
               ...prev,
               nomeUsuario: dados.nomeUsuario || nomeInicial,
-              fotoPerfil: dados.fotoPerfil || personagens[0]
+              fotoPerfil: foto
             }));
 
-            if (dados.fotoPerfil) {
-              const index = personagens.indexOf(dados.fotoPerfil);
+            if (foto) {
+              const index = personagens.indexOf(foto);
               if (index !== -1) setPosicao(index);
             }
+          } else {
+            setUser(prev => ({ ...prev, fotoPerfil: personagens[0] }));
           }
 
           const quizzesDoUsuario = await pegarQuizzesUsuario(u.uid);
@@ -122,16 +127,39 @@ function PaginaPrincipal() {
 
       const salaData = salaSnap.data();
 
-      // adiciona jogador caso não esteja na lista
-      const jaEsta = (salaData.jogadores || []).some(j => j.uid === auth.currentUser.uid);
+      const currentUid = auth.currentUser?.uid;
+      if (!currentUid) {
+        alert('Você precisa estar logado para entrar na sala.');
+        return;
+      }
+
+      const jaEsta = (salaData.jogadores || []).some(j => j.uid === currentUid);
 
       if (!jaEsta) {
+        // prioridade: estado user (foto já carregada) → buscar em /usuarios doc → fallback local personagem
+        let fotoDoUsuario = user?.fotoPerfil;
+        if (!fotoDoUsuario) {
+          try {
+            const userRef = doc(db, 'usuarios', currentUid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const data = userSnap.data();
+              fotoDoUsuario = data.FotoPerfil || data.fotoPerfil || data.personagem || personagem;
+            } else {
+              fotoDoUsuario = personagem;
+            }
+          } catch (err) {
+            console.error('Erro ao pegar foto do usuário antes de entrar na sala:', err);
+            fotoDoUsuario = personagem;
+          }
+        }
+
         await updateDoc(salaRef, {
           jogadores: arrayUnion({
-            uid: auth.currentUser.uid,
-            nome: auth.currentUser.displayName || 'Jogador',
-            pontos: 0,
-            personagem: user?.fotoPerfil || personagens[0] //o firebase ainda nao busca isso no lobby (arrumar)
+            uid: currentUid,
+            nome: auth.currentUser.displayName || user?.nomeUsuario || 'Jogador',
+            fotoPerfil: fotoDoUsuario,
+            pontos: 0
           })
         });
       }
@@ -164,7 +192,6 @@ function PaginaPrincipal() {
       </button>
     )}
 
-
       <img src='/pagina_principal/pgprincipalmoldura.png' className={styles.moldura} />
 
       <button className={styles.setadireita} onClick={direita}>
@@ -179,7 +206,8 @@ function PaginaPrincipal() {
         <p className={styles.nome}>{user ? user.nomeUsuario : "Convidado"}</p>
       </div>
 
-      <img className={styles.fotoperfil} src={personagem} alt="personagem" />
+      {/* aqui exibe a foto real do usuário (do Firestore) se tiver, senão o personagem local */}
+      <img className={styles.fotoperfil} src={user?.fotoPerfil || personagem} alt="personagem" />
 
       <p className={styles.paragrafo}>digite o código da sala:</p>
 
