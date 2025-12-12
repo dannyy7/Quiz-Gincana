@@ -14,6 +14,7 @@ import PerguntaEditor from './jogo/PerguntaEditor';
 import Pergunta from './jogo/Pergunta';
 import Lobby from './jogo/Lobby';
 import RecupSenha from './jogo/RecupSenha';
+import Ranking from './jogo/Ranking';
 import Podio from './jogo/Podio';
 
 // Definição das rotas
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
   { path: "/Sala/:codigo", element: <Lobby /> },  // nova rota da sala (lobby)
   { path: "/Lobby", element: <Lobby /> }, // mantive rota antiga apontando para o mesmo componente
   { path: "/RecupSenha", element: <RecupSenha/>},
+  { path: "/Ranking", element: <Ranking/>},
   { path: "/Podio", element: <Podio/>}
 ]);
 
