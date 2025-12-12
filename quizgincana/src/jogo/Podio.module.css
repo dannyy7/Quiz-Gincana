@@ -4,6 +4,7 @@
     position: relative;
     width: 100vw;
     height: 100vh;
+    background: url('./podio/fundopodio.png') center/cover no-repeat;
     display: flex;
     align-items: center;
 }

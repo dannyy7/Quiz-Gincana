@@ -81,7 +81,7 @@ function Podio(){
                     <div className={styles.person1}>
                         <p className={styles.carregando}>...</p>
                     </div>
-                    <div className={styles.coroa}><img src="/personagens/coroa.png" alt="coroa" /></div>
+                    <div className={styles.coroa}><img src="/podio/coroa.png" alt="coroa" /></div>
                     <div className={styles.primeiro}>
                         <p className={styles.nome}>Carregando...</p>
                         <p className={styles.posicao}>1º</p>
@@ -131,7 +131,7 @@ function Podio(){
                 <div className={styles.person1}>
                     <img src={primeiro.personagem} alt="personagem 1º" />
                 </div>
-                <div className={styles.coroa}><img src="/personagens/coroa.png" alt="coroa" /></div>
+                <div className={styles.coroa}><img src="/podio/coroa.png" alt="coroa" /></div>
                 <div className={styles.primeiro}>
                     <p className={styles.nome}>{primeiro.nome}</p>
                     <p className={styles.posicao}>1º</p>
