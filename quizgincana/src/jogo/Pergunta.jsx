@@ -147,6 +147,7 @@ function Pergunta() {
     }
 
     // -------------------- MODO NORMAL --------------------
+    return (
         <div className={styles.container}>
             <div className={styles.fundo}>
 
