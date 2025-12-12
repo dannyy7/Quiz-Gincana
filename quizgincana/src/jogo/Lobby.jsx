@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Lobby.module.css';
 import { db, auth } from '../firebase/bd';
@@ -10,7 +10,6 @@ function Lobby() {
     const [sala, setSala] = useState(null);
     const imgErrorRefs = useRef({});
 
-    // CARTAS
     const cartasBase = [
         '/lobby/carta1.png',
         '/lobby/carta2.png',
@@ -18,18 +17,20 @@ function Lobby() {
         '/lobby/carta4.png',
     ];
 
-    const [cartaAtual, setCartaAtual] = useState('');
-    const [cartasSorteadas, setCartasSorteadas] = useState([]);
+    const [cartasJogadores, setCartasJogadores] = useState({});
 
     useEffect(() => {
-        const sorteada = cartasBase[Math.floor(Math.random() * cartasBase.length)];
-        setCartaAtual(sorteada);
+        if (!sala?.jogadores) return;
 
-        const embaralhadas = [...cartasBase].sort(() => Math.random() - 0.5);
-        setCartasSorteadas(embaralhadas);
-    }, []);
+        const novas = {};
+        sala.jogadores.forEach(jogador => {
+            const carta = cartasBase[Math.floor(Math.random() * cartasBase.length)];
+            const rotacao = (Math.random() * 17 - 5); // até ±20° sem cortar
+            novas[jogador.uid] = { carta, rotacao };
+        });
+        setCartasJogadores(novas);
+    }, [sala?.jogadores]);
 
-    // FIRESTORE
     useEffect(() => {
         if (!codigo) return;
 
@@ -40,10 +41,8 @@ function Lobby() {
                 setSala(null);
                 return;
             }
-
             const data = snap.data();
             setSala(data);
-
             if (data.status === "iniciado" && data.quizID) {
                 navigate(`/Jogo/${data.quizID}/${codigo}`);
             }
@@ -55,13 +54,11 @@ function Lobby() {
         return () => unsub();
     }, [codigo, navigate]);
 
-    if (!sala) {
-        return (
-            <div className={styles.container}>
-                <p>Carregando sala...</p>
-            </div>
-        );
-    }
+    if (!sala) return (
+        <div className={styles.container}>
+            <p>Carregando sala...</p>
+        </div>
+    );
 
     const iniciarJogo = async () => {
         if (!auth.currentUser) {
@@ -75,7 +72,6 @@ function Lobby() {
         await updateDoc(doc(db, "salas", codigo), { status: "iniciado" });
     };
 
-    // normaliza caminho e garante fallback
     function normalizePath(path) {
         if (!path) return '/personagens/p1.png';
         if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -95,57 +91,48 @@ function Lobby() {
                 <p>Status: {sala.status}</p>
             </div>
 
-            {/* CARTA CENTRAL */}
-            {cartaAtual && (
-                <img src={cartaAtual} alt="Carta" className={styles.cartaAtual} />
-            )}
-
-            {/* CARTAS DE FUNDO */}
             <div className={styles.cartas}>
-                {cartasSorteadas.map((c, i) => (
-                    <img key={i} src={c} className={styles.carta} alt={`carta-${i}`} />
-                ))}
+                {sala.jogadores?.map(j => {
+                    const foto = normalizePath(
+                        j.fotoPerfil || j.FotoPerfil || j.personagem || '/personagens/p1.png'
+                    );
+
+                    const dadosCarta = cartasJogadores[j.uid] || {};
+                    const rotacao = dadosCarta.rotacao || 0;
+
+                    return (
+                        <div
+                            key={j.uid}
+                            className={styles.cardContainer}
+                            style={{ transform: `rotate(${rotacao}deg)` }}
+                        >
+                            <img
+                                src={dadosCarta.carta}
+                                className={styles.carta}
+                                alt={`carta-${j.nome}`}
+                            />
+
+                            <img
+                                src={foto}
+                                className={styles.avatarSobreposto}
+                                alt={`Foto de ${j.nome}`}
+                                onError={(e) => handleImgError(e, j.uid)}
+                            />
+
+                            <p className={styles.nomeJogador}>{j.nome}</p>
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* JOGADORES */}
-            <div className={styles.jogadoresBox}>
-                <h3>Jogadores conectados:</h3>
-
-                <ul>
-                    {sala.jogadores?.map(j => {
-                        // usamos sempre o campo fotoPerfil salvo na sala
-                        const foto = normalizePath(j.fotoPerfil || j.FotoPerfil || j.personagem || '/personagens/p1.png');
-
-                        console.log("🖼️ Foto de jogador:", j.nome, "→", foto);
-
-                        return (
-                            <li key={j.uid} className={styles.jogadorItem}>
-                                <img
-                                    src={foto}
-                                    className={styles.avatar}
-                                    alt={`Foto de ${j.nome}`}
-                                    onError={(e) => handleImgError(e, j.uid)}
-                                />
-                                <span>{j.nome}</span>
-                                {j.uid === sala.host && <strong> (Host)</strong>}
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-
-            {/* BOTÃO DO HOST */}
             {sala.host === auth.currentUser?.uid && (
                 <button className={styles.iniciar} onClick={iniciarJogo}>
                     Iniciar Jogo
                 </button>
             )}
 
-            <button
-                className={styles.voltar}
-                onClick={() => navigate("/PaginaPrincipal")}
-            >
-                Voltar
+            <button className={styles.fechar}>
+                <img src="/criar_quiz/fechar.png" alt="fechar" />
             </button>
         </div>
     );

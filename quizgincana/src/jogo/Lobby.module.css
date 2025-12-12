@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -16,20 +18,93 @@
   flex-direction: column;
 }
 
-.cartas {
-  display: flex;
-  gap: 10px;
-}
-
-.carta {
-  width: 15vw;
-  height: auto;
-}
-
 .salaHeader {
   text-align: center;
   color: #fff;
   margin-bottom: 20px;
+}
+
+/* CARTAS */
+.cartas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* container de cada carta + foto + nome */
+/* Calcula o tamanho do container baseado na diagonal da carta */
+.cardContainer {
+  position: relative;
+  width: 20vw;   /* container maior para evitar cortes na diagonal */
+  height: 38vw;  /* ajustável dependendo da proporção da carta */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible; 
+  transform-origin: center center;
+}
+
+/* carta */
+.carta {
+  width: 20vw; /* tamanho real da carta */
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  z-index: 0;
+  transform-origin: center center;
+}
+
+/* foto de perfil sobreposta */
+.avatarSobreposto {
+  position: absolute;
+  top: 57%;
+  left: 50%;
+  width: 17vw;
+  height: auto;
+  transform: translate(-50%, -60%);
+  object-fit: cover;
+  border: 3px solid white;
+  z-index: 1;
+  transform-origin: center center;
+}
+
+/* nome do jogador */
+.nomeJogador {
+  position: absolute;
+  top: 74%;
+  width: 100%;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  text-shadow: 1px 1px 3px black;
+  font-size: 2vw;
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  z-index: 2;
+  transform-origin: center center;
+}
+
+/* BOTÕES */
+.iniciar {
+  margin-top: 15px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: green;
+  color: #fff;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.voltar {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: red;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
 }
 
 .jogadoresBox {
@@ -51,28 +126,25 @@
 .avatar {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
   object-fit: cover;
+  background-color: aqua;
 }
 
-.iniciar {
-  margin-top: 15px;
-  padding: 12px 20px;
-  border-radius: 10px;
-  background: green;
-  color: #fff;
-  font-size: 20px;
+.fechar {
+  height: 75px;
+  width: 75px;
+  position: absolute;
+  top: 5vh;
+  left: 3vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
   border: none;
   cursor: pointer;
+  transition: transform 0.1s ease;
 }
 
-.voltar {
-  margin-top: 10px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  background: red;
-  color: #fff;
-  font-size: 18px;
-  border: none;
-  cursor: pointer;
+.fechar:hover {
+  transform: scale(1.1);
 }
