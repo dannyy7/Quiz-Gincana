@@ -87,8 +87,7 @@ function Lobby() {
     return (
         <div className={styles.container}>
             <div className={styles.salaHeader}>
-                <h1>Sala {sala.codigo}</h1>
-                <p>Status: {sala.status}</p>
+                <h1 className={styles.titulo}>Sala: {sala.codigo}</h1>
             </div>
 
             <div className={styles.cartas}>

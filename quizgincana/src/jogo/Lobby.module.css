@@ -13,8 +13,7 @@
   height: 100vh;
   overflow: hidden;
   background: url('/lobby/fundo2.jpg') center/cover no-repeat;
-  justify-content: center;
-  align-items: center;
+
   flex-direction: column;
 }
 
@@ -42,6 +41,7 @@
   align-items: center;
   overflow: visible; 
   transform-origin: center center;
+  margin-top: 10vh;
 }
 
 /* carta */
@@ -147,4 +147,14 @@
 
 .fechar:hover {
   transform: scale(1.1);
+}
+
+.titulo{
+  font-size: 3vw;
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  position: absolute;
+  top: 85%;
+  left: 10%;
+  color: black;
 }
