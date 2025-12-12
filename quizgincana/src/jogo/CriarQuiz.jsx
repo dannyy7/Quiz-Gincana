@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './CriarQuiz.module.css';
 import { auth, db } from '../firebase/bd';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, deleteDoc, setDoc } from 'firebase/firestore';
 
 function CriarQuiz() {
     const { quizID } = useParams();
@@ -21,9 +21,13 @@ function CriarQuiz() {
     const [postitAddImg, setPostitAddImg] = useState('');
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
+    // ============================
+    // CARREGAR QUIZ
+    // ============================
     useEffect(() => {
         const carregarQuiz = async () => {
             if (!auth.currentUser) return;
+
             const uid = auth.currentUser.uid;
             const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
             const snap = await getDoc(ref);
@@ -38,78 +42,15 @@ function CriarQuiz() {
         };
 
         carregarQuiz();
-
-        const imgAdd = imagensPostitBase[Math.floor(Math.random() * imagensPostitBase.length)];
-        setPostitAddImg(imgAdd);
+        setPostitAddImg(imagensPostitBase[Math.floor(Math.random() * imagensPostitBase.length)]);
     }, [quizID]);
 
-    // Gera um código alfanumérico de 5 letras (A-Z)
-    function gerarCodigoAlfa() {
-        const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        let codigo = '';
-        for (let i = 0; i < 5; i++) {
-            codigo += letras.charAt(Math.floor(Math.random() * letras.length));
-        }
-        return codigo;
-    }
-
-    // CRIA SALA no Firestore com código único (baseado no quiz atual)
-    async function criarSala() {
-        if (!auth.currentUser || !quiz) return;
-        const uid = auth.currentUser.uid;
-
-        // pega fotoPerfil do usuário no Firestore (onde o personagem está salvo)
-        let fotoPerfilDoUsuario = '/personagens/p1.png'; // fallback
-        try {
-            const userRef = doc(db, 'usuarios', uid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                // campo no seu projeto conforme combinado: FotoPerfil (ou fotoPerfil). tentamos ambos
-                fotoPerfilDoUsuario = data.FotoPerfil || data.fotoPerfil || data.personagem || fotoPerfilDoUsuario;
-            }
-        } catch (err) {
-            console.error('Erro ao buscar fotoPerfil do host:', err);
-        }
-
-        // gera código da sala e garante unicidade
-        let codigo = gerarCodigoAlfa();
-        let tentativa = 0;
-        while (tentativa < 10) {
-            const salaRefCheck = doc(db, 'salas', codigo);
-            const salaSnap = await getDoc(salaRefCheck);
-            if (!salaSnap.exists()) break;
-            codigo = gerarCodigoAlfa();
-            tentativa++;
-        }
-        const salaRef = doc(db, 'salas', codigo);
-
-        try {
-            await setDoc(salaRef, {
-                codigo,
-                quizID,
-                host: uid,
-                jogadores: [
-                    {
-                        uid,
-                        nome: auth.currentUser.displayName || "Host",
-                        fotoPerfil: fotoPerfilDoUsuario,
-                        pontos: 0
-                    }
-                ],
-                status: "aguardando",
-                criadoEm: Date.now()
-            });
-
-            navigate(`/Sala/${codigo}`);
-        } catch (err) {
-            console.error("Erro ao criar sala:", err);
-            alert("Erro ao criar sala. Tente novamente.");
-        }
-    }
-
+    // ============================
+    // ADICIONAR PERGUNTA
+    // ============================
     const handleAdicionarPergunta = async () => {
         if (!auth.currentUser || !quiz) return;
+
         const uid = auth.currentUser.uid;
 
         const novaPergunta = {
@@ -131,6 +72,26 @@ function CriarQuiz() {
         }
     };
 
+    // ============================
+    // AUTOSAVE TÍTULO
+    // ============================
+    useEffect(() => {
+        if (!auth.currentUser || !quiz) return;
+
+        const uid = auth.currentUser.uid;
+        const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
+
+        const timeout = setTimeout(() => {
+            updateDoc(ref, { titulo: quiz.titulo })
+                .catch(err => console.error("Erro ao autosalvar título:", err));
+        }, 600);
+
+        return () => clearTimeout(timeout);
+    }, [quiz?.titulo]);
+
+    // ============================
+    // FECHAR QUIZ (volta para página principal)
+    // ============================
     const handleFechar = async () => {
         if (!auth.currentUser || !quiz) return;
 
@@ -145,28 +106,68 @@ function CriarQuiz() {
         }
     };
 
-    useEffect(() => {
+    // ============================
+    // CRIAR SALA (COM FOTO DO PERFIL = PERSONAGEM)
+    // ============================
+    async function criarSala() {
         if (!auth.currentUser || !quiz) return;
-        if (quiz.titulo === undefined) return;
 
         const uid = auth.currentUser.uid;
-        const ref = doc(db, "usuarios", uid, "quizzes", quizID);
 
-        const timeout = setTimeout(() => {
-            updateDoc(ref, { titulo: quiz.titulo })
-                .catch(err => console.error("Erro ao autosalvar título:", err));
-        }, 600);
+        // buscar personagem
+        let fotoPerfil = '/personagens/p1.png';
 
-        return () => clearTimeout(timeout);
-    }, [quiz?.titulo]);
+        try {
+            const userRef = doc(db, 'usuarios', uid);
+            const userSnap = await getDoc(userRef);
 
+            if (userSnap.exists()) {
+                const data = userSnap.data();
+                fotoPerfil = data.FotoPerfil || data.personagem || fotoPerfil;
+            }
+        } catch (err) {
+            console.error("Erro ao buscar fotoPerfil:", err);
+        }
+
+        // gerar código
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const gerarCodigo = () =>
+            Array.from({ length: 5 }, () => letras[Math.floor(Math.random() * letras.length)]).join("");
+
+        let codigo = gerarCodigo();
+
+        // criar sala
+        const salaRef = doc(db, "salas", codigo);
+
+        await setDoc(salaRef, {
+            codigo,
+            quizID,
+            host: uid,
+            status: "aguardando",
+            criadoEm: Date.now(),
+            jogadores: [
+                {
+                    uid,
+                    nome: auth.currentUser.displayName || "Host",
+                    personagem: fotoPerfil,
+                    pontos: 0
+                }
+            ]
+        });
+
+        navigate(`/Sala/${codigo}`);
+    }
+
+    // ============================
+    // EXCLUIR QUIZ
+    // ============================
     const handleExcluirQuiz = async () => {
         if (!auth.currentUser) return;
+
         const uid = auth.currentUser.uid;
 
         try {
-            const ref = doc(db, 'usuarios', uid, 'quizzes', quizID);
-            await deleteDoc(ref);
+            await deleteDoc(doc(db, 'usuarios', uid, 'quizzes', quizID));
             setShowConfirmPopup(false);
             navigate('/PaginaPrincipal');
         } catch (err) {
@@ -177,17 +178,20 @@ function CriarQuiz() {
     return (
         <div className={styles.container}>
 
+            {/* CRIAR SALA */}
             <button className={styles.jogar} onClick={criarSala}></button>
 
-            {/* botão excluir abre o popup */}
+            {/* BOTÃO EXCLUIR */}
             <button className={styles.excluir} onClick={() => setShowConfirmPopup(true)}>
                 <img src="/criar_quiz/lixeira.png" alt="" />
             </button>
 
+            {/* FECHAR */}
             <button className={styles.fechar} onClick={handleFechar}>
                 <img src="/criar_quiz/fechar.png" alt="fechar" />
             </button>
 
+            {/* TÍTULO */}
             <div className={styles.row}>
                 <div className={styles.tituloWrapper}>
                     <img src="/criar_quiz/postittitulo.png" alt="" className={styles.postittitulo} />
@@ -200,16 +204,19 @@ function CriarQuiz() {
                 </div>
             </div>
 
+            {/* POST-ITS */}
             <div className={styles.boxpostit}>
-                {perguntas.map((p, index) => p.id && (
-                    <button
-                        key={p.id}
-                        className={styles.postit}
-                        onClick={() => navigate(`/PerguntaEditor/${quizID}/${p.id}`)}
-                    >
-                        <img src={p.img} alt="post-it" />
-                        <span className={styles.numeroPostit}>{index + 1}</span>
-                    </button>
+                {perguntas.map((p, index) => (
+                    p.id && (
+                        <button
+                            key={p.id}
+                            className={styles.postit}
+                            onClick={() => navigate(`/PerguntaEditor/${quizID}/${p.id}`)}
+                        >
+                            <img src={p.img} alt="post-it" />
+                            <span className={styles.numeroPostit}>{index + 1}</span>
+                        </button>
+                    )
                 ))}
 
                 <button className={styles.postitAdd} onClick={handleAdicionarPergunta}>
@@ -218,29 +225,23 @@ function CriarQuiz() {
                 </button>
             </div>
 
-            {/* NOVO: popup de confirmação */}
+            {/* POPUP DE CONFIRMAÇÃO */}
             {showConfirmPopup && (
                 <div className={styles.popupOverlay}>
                     <div className={styles.popupContent}>
                         <h3>Tem certeza que deseja excluir este quiz?</h3>
+
                         <div className={styles.popupButtons}>
-                            <button 
-                                className={styles.cancelar} 
-                                onClick={() => setShowConfirmPopup(false)}
-                            >
+                            <button className={styles.cancelar} onClick={() => setShowConfirmPopup(false)}>
                                 Cancelar
                             </button>
-                            <button 
-                                className={styles.confirmar} 
-                                onClick={handleExcluirQuiz}
-                            >
+                            <button className={styles.confirmar} onClick={handleExcluirQuiz}>
                                 Excluir
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }
