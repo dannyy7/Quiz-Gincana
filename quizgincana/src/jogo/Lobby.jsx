@@ -99,7 +99,7 @@ function Lobby() {
                         const personagemFinal = 
                             typeof j.personagem === "string" && j.personagem.trim() !== ""
                                 ? j.personagem
-                                : "/personagens/p3.png";
+                                : "/personagens/p5.png";
 
                         console.log("✅ Personagem usado:", personagemFinal);
 
