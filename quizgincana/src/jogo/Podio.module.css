@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Paytone+One&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 .container {
     position: relative;
     width: 100vw;
@@ -99,16 +101,17 @@
 .person1{
     height: 28vh;
     width: 28%;
-    border: solid 3px blue;
+    border: transparent 3px;
     position: absolute;
     bottom: 60%;
     right: 34.5%;
+    z-index: 1;
 }
 
 .person2{
     height: 25vh;
     width: 23%;
-    border: solid 3px blue;
+    border: transparent 3px;
     position: absolute;
     bottom: 50%;
     right: 73.25%; 
@@ -117,8 +120,56 @@
 .person3{
     height: 22vh;
     width: 20%;
-    border: solid 3px blue;
+    border: transparent 3px;
     position: absolute;
     bottom: 40%;
     right: 3.7%;
+}
+.coroa{
+    height: 28vh;
+    width: 28%;
+    position: absolute;
+    bottom: 60%;
+    right: 34.5%;
+
+}
+
+.coroa img{
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.nome{
+    justify-self: center;
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 25px;
+    padding-top: 5px;
+}
+
+.posicao{
+    justify-self: center;
+    font-family: "Kalam", cursive;
+    font-weight: 1000;
+    font-style: normal;
+    font-size: 50px;
+}
+
+.pontos{
+    justify-self: center;
+    font-family: "Kalam", cursive;
+    font-weight: 1000;
+    font-style: normal;
+    font-size: 20px;
+}
+
+.carregando{
+    justify-self: center;
+    font-family: "Kalam", cursive;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 20px;
+    padding-top: 60px;
 }
