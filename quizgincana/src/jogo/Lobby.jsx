@@ -25,7 +25,7 @@ function Lobby() {
         const novas = {};
         sala.jogadores.forEach(jogador => {
             const carta = cartasBase[Math.floor(Math.random() * cartasBase.length)];
-            const rotacao = (Math.random() * 17 - 5); // até ±20° sem cortar
+            const rotacao = (Math.random() * 17 - 5);
             novas[jogador.uid] = { carta, rotacao };
         });
         setCartasJogadores(novas);
@@ -98,6 +98,7 @@ function Lobby() {
 
                     const dadosCarta = cartasJogadores[j.uid] || {};
                     const rotacao = dadosCarta.rotacao || 0;
+                    const isHost = j.uid === sala.host;
 
                     return (
                         <div
@@ -110,6 +111,14 @@ function Lobby() {
                                 className={styles.carta}
                                 alt={`carta-${j.nome}`}
                             />
+
+                            {isHost && (
+                                <img
+                                    src="/lobby/coroa.png"
+                                    className={styles.coroa}
+                                    alt="Coroa do host"
+                                />
+                            )}
 
                             <img
                                 src={foto}

@@ -13,7 +13,6 @@
   height: 100vh;
   overflow: hidden;
   background: url('/lobby/fundo2.jpg') center/cover no-repeat;
-
   flex-direction: column;
 }
 
@@ -31,7 +30,6 @@
 }
 
 /* container de cada carta + foto + nome */
-/* Calcula o tamanho do container baseado na diagonal da carta */
 .cardContainer {
   position: relative;
   width: 20vw;   /* container maior para evitar cortes na diagonal */
@@ -64,7 +62,7 @@
   transform: translate(-50%, -60%);
   object-fit: cover;
   border: 3px solid white;
-  z-index: 1;
+  z-index: 2;
   transform-origin: center center;
 }
 
@@ -82,6 +80,17 @@
   font-weight: 700;
   z-index: 2;
   transform-origin: center center;
+}
+
+/* coroa do host */
+.coroa {
+  position: absolute;
+  top: 5%; /* ajusta altura acima da carta */
+  left: 50%;
+  width: 13vw;
+  height: auto;
+  transform: translateX(-50%);
+  z-index: 3;
 }
 
 /* BOTÕES */
