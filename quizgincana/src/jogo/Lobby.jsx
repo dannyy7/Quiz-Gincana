@@ -8,6 +8,7 @@ function Lobby() {
     const { codigo } = useParams();
     const navigate = useNavigate();
     const [sala, setSala] = useState(null);
+    const [pronto, setPronto] = useState(false);
     const imgErrorRefs = useRef({});
 
     const cartasBase = [
@@ -72,6 +73,22 @@ function Lobby() {
         await updateDoc(doc(db, "salas", codigo), { status: "iniciado" });
     };
 
+    const marcarPronto = async () => {
+        if (!auth.currentUser) return;
+
+        const uid = auth.currentUser.uid;
+        const ref = doc(db, "salas", codigo);
+
+        // Atualiza o campo 'pronto' do jogador
+        const jogadoresAtualizados = sala.jogadores.map(j => {
+            if (j.uid === uid) return { ...j, pronto: true };
+            return j;
+        });
+
+        await updateDoc(ref, { jogadores: jogadoresAtualizados });
+        setPronto(true);
+    };
+
     function normalizePath(path) {
         if (!path) return '/personagens/p1.png';
         if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -127,12 +144,21 @@ function Lobby() {
                                 onError={(e) => handleImgError(e, j.uid)}
                             />
 
-                            <p className={styles.nomeJogador}>{j.nome}</p>
+                            <p className={styles.nomeJogador}>
+                                {j.nome}
+                            </p>
                         </div>
                     );
                 })}
             </div>
 
+            {/* Botão "Pronto" só para jogadores que não são host e que ainda não marcaram */}
+            {sala.host !== auth.currentUser?.uid && !pronto && (
+                <button className={styles.pronto} onClick={marcarPronto}>
+                </button>
+            )}
+
+            {/* Botão "Iniciar Jogo" só para o host */}
             {sala.host === auth.currentUser?.uid && (
                 <button className={styles.iniciar} onClick={iniciarJogo}>
                     Iniciar Jogo
