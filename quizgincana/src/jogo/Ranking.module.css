@@ -82,6 +82,26 @@
     font-weight: bold;
 }
 
+.continuar {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #37b1b1;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-family: "Kalam", cursive;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.continuar:hover {
+    background-color: #2a8a8a;
+    color: white;
+}
+
 .loadingBox {
     opacity: 0.6;
     animation: pulse 1.3s infinite alternate;

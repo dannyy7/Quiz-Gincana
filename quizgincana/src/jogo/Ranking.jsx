@@ -11,6 +11,7 @@ function Ranking() {
 
     const [jogadores, setJogadores] = useState([]);
     const [carregando, setCarregando] = useState(true);
+    const [isHost, setIsHost] = useState(false);
 
     useEffect(() => {
         const carregarRanking = async () => {
@@ -29,6 +30,7 @@ function Ranking() {
 
             const ordenados = [...lista].sort((a, b) => b.pontos - a.pontos);
 
+            setIsHost(dados.host === uid);
             setJogadores(ordenados);
             setCarregando(false);
         };
@@ -71,6 +73,10 @@ function Ranking() {
                         </div>
                     ))}
                 </div>
+
+                { isHost && !carregando && <button className={styles.continuar} onClick={() => {navigate(-1)}}>
+                    Continuar Quiz
+                </button>}
 
             </div>
         </div>
