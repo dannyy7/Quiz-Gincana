@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'; 
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Lobby.module.css';
 import { db, auth } from '../firebase/bd';
@@ -8,7 +8,6 @@ function Lobby() {
     const { codigo } = useParams();
     const navigate = useNavigate();
     const [sala, setSala] = useState(null);
-    const [pronto, setPronto] = useState(false);
     const imgErrorRefs = useRef({});
 
     const cartasBase = [
@@ -26,7 +25,7 @@ function Lobby() {
         const novas = {};
         sala.jogadores.forEach(jogador => {
             const carta = cartasBase[Math.floor(Math.random() * cartasBase.length)];
-            const rotacao = (Math.random() * 17 - 5);
+            const rotacao = Math.random() * 17 - 5;
             novas[jogador.uid] = { carta, rotacao };
         });
         setCartasJogadores(novas);
@@ -37,40 +36,49 @@ function Lobby() {
 
         const ref = doc(db, "salas", codigo);
 
-        const unsub = onSnapshot(ref, snap => {
-            if (!snap.exists()) {
+        const unsub = onSnapshot(
+            ref,
+            snap => {
+                if (!snap.exists()) {
+                    setSala(null);
+                    return;
+                }
+
+                const data = snap.data();
+                setSala(data);
+
+                if (data.status === "iniciado" && data.quizID) {
+                    navigate(`/Jogo/${data.quizID}/${codigo}`);
+                }
+            },
+            err => {
+                console.error("Erro onSnapshot sala:", err);
                 setSala(null);
-                return;
             }
-            const data = snap.data();
-            setSala(data);
-            if (data.status === "iniciado" && data.quizID) {
-                navigate(`/Jogo/${data.quizID}/${codigo}`);
-            }
-        }, (err) => {
-            console.error("Erro onSnapshot sala:", err);
-            setSala(null);
-        });
+        );
 
         return () => unsub();
     }, [codigo, navigate]);
 
-    if (!sala) return (
-        <div className={styles.container}>
-            <p>Carregando sala...</p>
-        </div>
-    );
+    if (!sala) {
+        return (
+            <div className={styles.container}>
+                <p>Carregando sala...</p>
+            </div>
+        );
+    }
 
     const iniciarJogo = async () => {
-        if (!auth.currentUser) {
-            alert("Usuário não autenticado.");
-            return;
-        }
+        if (!auth.currentUser) return;
+
         if (sala.host !== auth.currentUser.uid) {
             alert("Apenas o host pode iniciar.");
             return;
         }
-        await updateDoc(doc(db, "salas", codigo), { status: "iniciado" });
+
+        await updateDoc(doc(db, "salas", codigo), {
+            status: "iniciado"
+        });
     };
 
     const marcarPronto = async () => {
@@ -79,14 +87,13 @@ function Lobby() {
         const uid = auth.currentUser.uid;
         const ref = doc(db, "salas", codigo);
 
-        // Atualiza o campo 'pronto' do jogador
-        const jogadoresAtualizados = sala.jogadores.map(j => {
-            if (j.uid === uid) return { ...j, pronto: true };
-            return j;
-        });
+        const jogadoresAtualizados = sala.jogadores.map(j =>
+            j.uid === uid ? { ...j, pronto: true } : j
+        );
 
-        await updateDoc(ref, { jogadores: jogadoresAtualizados });
-        setPronto(true);
+        await updateDoc(ref, {
+            jogadores: jogadoresAtualizados
+        });
     };
 
     function normalizePath(path) {
@@ -100,6 +107,8 @@ function Lobby() {
         imgErrorRefs.current[uid] = true;
         e.currentTarget.src = '/personagens/p2.png';
     }
+
+    const usuarioAtualUid = auth.currentUser?.uid;
 
     return (
         <div className={styles.container}>
@@ -144,23 +153,36 @@ function Lobby() {
                                 onError={(e) => handleImgError(e, j.uid)}
                             />
 
-                            <p className={styles.nomeJogador}>
-                                {j.nome}
-                            </p>
+                            {/* PRONTO POST-IT: só quem não é host e já marcou pronto */}
+                            {!isHost && j.pronto && (
+                                <img
+                                    src="/lobby/prontopostit.png"
+                                    className={styles.prontopostit}
+                                    alt="Pronto"
+                                />
+                            )}
+
+                            <p className={styles.nomeJogador}>{j.nome}</p>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Botão "Pronto" só para jogadores que não são host e que ainda não marcaram */}
-            {sala.host !== auth.currentUser?.uid && !pronto && (
-                <button className={styles.pronto} onClick={marcarPronto}>
-                </button>
-            )}
+            {/* Botão PRONTO: só para quem não é host e ainda não marcou */}
+            {usuarioAtualUid !== sala.host &&
+                !sala.jogadores.find(j => j.uid === usuarioAtualUid)?.pronto && (
+                    <button
+                        className={styles.pronto}
+                        onClick={marcarPronto}
+                    />
+                )}
 
-            {/* Botão "Iniciar Jogo" só para o host */}
-            {sala.host === auth.currentUser?.uid && (
-                <button className={styles.iniciar} onClick={iniciarJogo}>
+            {/* Botão INICIAR: só host */}
+            {usuarioAtualUid === sala.host && (
+                <button
+                    className={styles.iniciar}
+                    onClick={iniciarJogo}
+                >
                     Iniciar Jogo
                 </button>
             )}
