@@ -49,14 +49,7 @@ npm install react-router-dom
 ```
 
 
-### 3. Criar o aquivo .env
-
-```.env
-
-
-```
-
-### 4. Rodar o projeto
+### 3. Rodar o projeto
 
 Ao enviar o código abaixo no terminal o aplicativo estará disponível no link fornecido
 
