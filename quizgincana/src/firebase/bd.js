@@ -16,7 +16,8 @@ import {
   addDoc, 
   updateDoc, 
   getDocs,
-  arrayUnion
+  arrayUnion,
+  onSnapshot
 } from "firebase/firestore";
 
 // ===============================
@@ -173,10 +174,14 @@ export async function criarSalaParaQuiz(quizID, hostUID, hostNome) {
         uid: hostUID,
         nome: hostNome,
         personagem: personagemHost || "/personagens/default.png",
-        pontos: 0
+        pontos: 0,
+        pronto: false
       }
     ],
     status: "aguardando",
+    perguntaAtual: 1,
+    tempoRestante: 30,
+    respostas: [],
     criadoEm: Date.now()
   });
 
@@ -200,10 +205,89 @@ export async function entrarNaSala(codigo, uid, nome) {
         uid,
         nome,
         personagem: personagem || "/personagens/default.png",
-        pontos: 0
+        pontos: 0,
+        pronto: false
       })
     });
   }
 
   return codigo;
 }
+
+// ===============================
+// FUNÇÕES ADICIONAIS PARA SINCRONIZAÇÃO
+// ===============================
+
+// Buscar sala por código
+export const pegarSalaPorCodigo = async (codigo) => {
+  const ref = doc(db, "salas", codigo);
+  const snap = await getDoc(ref);
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+};
+
+// Atualizar estado da sala
+export const atualizarEstadoSala = async (codigo, dados) => {
+  const ref = doc(db, "salas", codigo);
+  await updateDoc(ref, dados);
+};
+
+// Escutar mudanças na sala
+export const escutarSala = (codigo, callback) => {
+  const ref = doc(db, "salas", codigo);
+  return onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      callback({ id: snap.id, ...snap.data() });
+    } else {
+      callback(null);
+    }
+  });
+};
+
+// Registrar resposta do jogador
+export const registrarResposta = async (codigoSala, dadosResposta) => {
+  const ref = doc(db, "salas", codigoSala);
+  await updateDoc(ref, {
+    respostas: arrayUnion(dadosResposta)
+  });
+};
+
+// Buscar sala do usuário atual
+export const buscarSalaDoUsuario = async (uid) => {
+  const ref = collection(db, "salas");
+  const snap = await getDocs(ref);
+  
+  for (const docSnap of snap.docs) {
+    const sala = docSnap.data();
+    if (sala.jogadores?.some(j => j.uid === uid)) {
+      return { id: docSnap.id, ...sala };
+    }
+  }
+  return null;
+};
+
+// Buscar todas as salas
+export const buscarTodasSalas = async () => {
+  const ref = collection(db, "salas");
+  const snap = await getDocs(ref);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+};
+
+// Iniciar quiz na sala
+export const iniciarQuizNaSala = async (codigoSala) => {
+  const ref = doc(db, "salas", codigoSala);
+  await updateDoc(ref, {
+    status: "iniciado",
+    perguntaAtual: 1,
+    tempoRestante: 30
+  });
+};
+
+// Avançar para próxima pergunta
+export const avancarPergunta = async (codigoSala, proximaPergunta) => {
+  const ref = doc(db, "salas", codigoSala);
+  await updateDoc(ref, {
+    perguntaAtual: proximaPergunta,
+    tempoRestante: 30,
+    respostas: [] // Limpar respostas da pergunta anterior
+  });
+};

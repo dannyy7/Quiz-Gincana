@@ -27,21 +27,40 @@ const router = createBrowserRouter([
   { path: "/CriarQuiz/:quizID", element: <CriarQuiz /> },
   { path: "/PerguntaEditor/:quizID/:perguntaID", element: <PerguntaEditor /> },
 
-  // 🔥 ROTAS DO JOGO (FALTAVAM)
-  { path: "/quiz/:quizId/pergunta/:perguntaId", element: <Pergunta /> },
-  { path: "/ranking/:quizId", element: <Ranking /> },
-  { path: "/podio/:quizId", element: <Podio /> },
-
-  // 🔹 rotas antigas (mantidas)
-  { path: "/Pergunta", element: <Pergunta /> },
-  { path: "/Ranking", element: <Ranking /> },
-  { path: "/Podio", element: <Podio /> },
+  // 🔥 ROTAS PRINCIPAIS DO JOGO
+  { 
+    path: "/quiz/:quizId/pergunta/:perguntaId", 
+    element: <Pergunta /> 
+  },
+  { 
+    path: "/ranking/:quizId", 
+    element: <Ranking /> 
+  },
+  { 
+    path: "/podio/:quizId", 
+    element: <Podio /> 
+  },
 
   // Sala / Lobby
-  { path: "/Sala/:codigo", element: <Lobby /> },
-  { path: "/Lobby", element: <Lobby /> },
+  { 
+    path: "/Sala/:codigo", 
+    element: <Lobby /> 
+  },
+  { 
+    path: "/Lobby", 
+    element: <Lobby /> 
+  },
 
-  { path: "/RecupSenha", element: <RecupSenha /> }
+  { 
+    path: "/RecupSenha", 
+    element: <RecupSenha /> 
+  },
+
+  // 🔥 ROTA DE FALLBACK (opcional)
+  { 
+    path: "*", 
+    element: <div>Página não encontrada</div> 
+  }
 ]);
 
 createRoot(document.getElementById('root')).render(
