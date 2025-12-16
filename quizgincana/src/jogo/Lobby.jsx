@@ -47,8 +47,9 @@ function Lobby() {
                 const data = snap.data();
                 setSala(data);
 
+                // 🔥 IMPLEMENTAÇÃO: redirecionamento global
                 if (data.status === "iniciado" && data.quizID) {
-                    navigate(`/Jogo/${data.quizID}/${codigo}`);
+                    navigate(`/quiz/${data.quizID}/pergunta/1`);
                 }
             },
             err => {
@@ -76,6 +77,7 @@ function Lobby() {
             return;
         }
 
+        // 🔥 IMPLEMENTAÇÃO: só muda status
         await updateDoc(doc(db, "salas", codigo), {
             status: "iniciado"
         });
@@ -153,7 +155,6 @@ function Lobby() {
                                 onError={(e) => handleImgError(e, j.uid)}
                             />
 
-                            {/* PRONTO POST-IT: só quem não é host e já marcou pronto */}
                             {!isHost && j.pronto && (
                                 <img
                                     src="/lobby/prontopostit.png"
@@ -168,7 +169,6 @@ function Lobby() {
                 })}
             </div>
 
-            {/* Botão PRONTO: só para quem não é host e ainda não marcou */}
             {usuarioAtualUid !== sala.host &&
                 !sala.jogadores.find(j => j.uid === usuarioAtualUid)?.pronto && (
                     <button
@@ -177,7 +177,6 @@ function Lobby() {
                     />
                 )}
 
-            {/* Botão INICIAR: só host */}
             {usuarioAtualUid === sala.host && (
                 <button
                     className={styles.iniciar}

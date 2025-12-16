@@ -20,14 +20,17 @@ function Pergunta() {
         const carregarPergunta = async () => {
             if (!uid) return;
 
-            const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
+            const quizRef = doc(db, "quizzesPublicos", quizId);
             const snap = await getDoc(quizRef);
-
             if (!snap.exists()) return;
 
             const quizData = snap.data();
 
-            const perg = quizData.perguntas.find(p => p.id == perguntaId);
+            // ✅ ORDEM GARANTIDA PELO ÍNDICE
+            const index = Number(perguntaId) - 1;
+            const perg = quizData.perguntas[index];
+
+            if (!perg) return;
 
             setPergunta(perg);
         };
@@ -69,7 +72,7 @@ function Pergunta() {
 
         const timeout = setTimeout(async () => {
 
-            const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
+            const quizRef = doc(db, "quizzesPublicos", quizId);
             const snap = await getDoc(quizRef);
             if (!snap.exists()) return;
 
@@ -93,8 +96,7 @@ function Pergunta() {
         }, 1500);
 
         return () => clearTimeout(timeout);
-    }, [travado, pergunta, perguntaId, navigate, quizId, uid]);
-
+    }, [travado, pergunta, perguntaId, navigate, quizId]);
 
     // -------------------- MODO TESTE --------------------
     if (!pergunta) {

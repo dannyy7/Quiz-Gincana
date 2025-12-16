@@ -23,14 +23,25 @@ const router = createBrowserRouter([
   { path: "/PaginaPrincipal", element: <PaginaPrincipal /> },
   { path: "/SignUp", element: <SignUp /> },
   { path: "/Login", element: <Login /> },
+
   { path: "/CriarQuiz/:quizID", element: <CriarQuiz /> },
   { path: "/PerguntaEditor/:quizID/:perguntaID", element: <PerguntaEditor /> },
+
+  // 🔥 ROTAS DO JOGO (FALTAVAM)
+  { path: "/quiz/:quizId/pergunta/:perguntaId", element: <Pergunta /> },
+  { path: "/ranking/:quizId", element: <Ranking /> },
+  { path: "/podio/:quizId", element: <Podio /> },
+
+  // 🔹 rotas antigas (mantidas)
   { path: "/Pergunta", element: <Pergunta /> },
-  { path: "/Sala/:codigo", element: <Lobby /> },  // nova rota da sala (lobby)
-  { path: "/Lobby", element: <Lobby /> }, // mantive rota antiga apontando para o mesmo componente
-  { path: "/RecupSenha", element: <RecupSenha/>},
-  { path: "/Ranking", element: <Ranking/>},
-  { path: "/Podio", element: <Podio/>}
+  { path: "/Ranking", element: <Ranking /> },
+  { path: "/Podio", element: <Podio /> },
+
+  // Sala / Lobby
+  { path: "/Sala/:codigo", element: <Lobby /> },
+  { path: "/Lobby", element: <Lobby /> },
+
+  { path: "/RecupSenha", element: <RecupSenha /> }
 ]);
 
 createRoot(document.getElementById('root')).render(
