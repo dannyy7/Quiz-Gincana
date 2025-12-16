@@ -45,11 +45,11 @@ function Podio(){
 
             const sala = snap.data();
 
-            if (sala.quizId && sala.hostUid) {
+            if (sala.quizId && sala.host) {
                 const quizRef = doc(
                     db,
                     "usuarios",
-                    sala.hostUid,
+                    sala.host,
                     "quizzes",
                     sala.quizId
                 );
