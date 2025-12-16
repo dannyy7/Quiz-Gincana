@@ -3,8 +3,9 @@ import './estiloglobal.css';
 import styles from './PaginaPrincipal.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ouvirUsuario, logout, auth, db } from "../firebase/bd";
-import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, updateDoc} from "firebase/firestore";
 import { criarQuiz, pegarQuizzesUsuario } from "../firebase/bd";
+import { signInAnonymously } from "firebase/auth";
 
 function PaginaPrincipal() {
   const [botao, setBotao] = useState('/pagina_principal/pgprincipaljogar1.png');
@@ -26,11 +27,17 @@ function PaginaPrincipal() {
   const personagem = personagens[posicao];
 
   async function salvarFotoPerfil(url) {
-    if (!user || !user.uid) return;
+
+    setUser(prev => ({ ...(prev || {
+      uid: null,
+      isAnonymous: true,
+      nomeUsuario: "Convidado",
+    }), fotoPerfil: url }));
+
+    if (!user || user.isAnonymous) return;
     try {
       const ref = doc(db, "usuarios", user.uid);
       await updateDoc(ref, { FotoPerfil: url }); // padronizei para FotoPerfil (maiusc) conforme sua preferência
-      setUser(prev => ({ ...prev, fotoPerfil: url }));
     } catch (err) {
       console.error("Erro ao salvar foto de perfil:", err);
     }
@@ -84,7 +91,12 @@ function PaginaPrincipal() {
           console.error("Erro ao buscar dados do usuário:", err);
         }
       } else {
-        setUser(null);
+        setUser({
+          uid: null,
+          isAnonymous: true,
+          nomeUsuario: "Convidado",
+          fotoPerfil: personagens[posicao]
+        });
         setQuizzes([]);
       }
     });
@@ -109,6 +121,14 @@ function PaginaPrincipal() {
     }
   }
 
+  async function garantirUsuario(){
+    if(!auth.currentUser){
+      const cred = await signInAnonymously(auth);
+      return cred.user;
+    }
+    return auth.currentUser;
+  }
+
   // ENTRAR NA SALA digitando o código (alfabético 5 letras)
   async function entrarNaSala() {
     const codigo = (codigoSala || '').toUpperCase().trim();
@@ -125,44 +145,27 @@ function PaginaPrincipal() {
         return;
       }
 
+      const usuarioAuth = await garantirUsuario();
+      const currentUid = usuarioAuth.uid;
+
       const salaData = salaSnap.data();
 
-      const currentUid = auth.currentUser?.uid;
-      if (!currentUid) {
-        alert('Você precisa estar logado para entrar na sala.');
-        return;
-      }
-
-      const jaEsta = (salaData.jogadores || []).some(j => j.uid === currentUid);
-
-      if (!jaEsta) {
-        // prioridade: estado user (foto já carregada) → buscar em /usuarios doc → fallback local personagem
-        let fotoDoUsuario = user?.fotoPerfil;
-        if (!fotoDoUsuario) {
-          try {
-            const userRef = doc(db, 'usuarios', currentUid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-              const data = userSnap.data();
-              fotoDoUsuario = data.FotoPerfil || data.fotoPerfil || data.personagem || personagem;
-            } else {
-              fotoDoUsuario = personagem;
-            }
-          } catch (err) {
-            console.error('Erro ao pegar foto do usuário antes de entrar na sala:', err);
-            fotoDoUsuario = personagem;
-          }
+      const jogador = {
+          uid: currentUid,
+          nome: auth.currentUser.isAnonymous ? 'Convidado' : auth.currentUser.displayName || user?.nomeUsuario || 'Jogador',
+          fotoPerfil: usuarioAuth.isAnonymous ? personagem : user?.fotoPerfil || personagem,
+          pontos: 0
         }
 
+        const jogadoresAtualizados  = (salaData.jogadores || []).filter(
+          j => j.uid !== currentUid
+        );
+
+        jogadoresAtualizados.push(jogador);
+
         await updateDoc(salaRef, {
-          jogadores: arrayUnion({
-            uid: currentUid,
-            nome: auth.currentUser.displayName || user?.nomeUsuario || 'Jogador',
-            fotoPerfil: fotoDoUsuario,
-            pontos: 0
-          })
+          jogadores: jogadoresAtualizados
         });
-      }
 
       navigate(`/Sala/${codigo}`);
     } catch (err) {
