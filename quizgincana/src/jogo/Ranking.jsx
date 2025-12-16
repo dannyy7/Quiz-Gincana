@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase/bd";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDocs, onSnapshot, updateDoc } from "firebase/firestore";
 import styles from "./Ranking.module.css";
 
 function Ranking() {
@@ -9,34 +9,64 @@ function Ranking() {
     const navigate = useNavigate();
     const uid = auth.currentUser?.uid;
 
+    const [codigoSala, setCodigoSala] = useState(null);
+    const [salaId, setSalaId] = useState(null);
     const [jogadores, setJogadores] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [isHost, setIsHost] = useState(false);
 
     useEffect(() => {
-        const carregarRanking = async () => {
+        const encontrarSala = async () => {
             if (!uid) return;
 
-            const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
-            const snap = await getDoc(quizRef);
+            const snap = await getDocs(collection(db, "salas"));
+            for (const docSnap of snap.docs) {
+                const sala = docSnap.data();
+                if ( sala.jogadores?.some(j => j.uid === uid)){
+                    setCodigoSala(sala.codigo);
+                    setSalaId(docSnap.id);
 
-            if (!snap.exists()) {
-                setCarregando(false);
-                return;
+                    const eHost = sala.hostUid || sala.jogadores[0]?.uid === uid;
+                    
+                    setIsHost(eHost);
+                    return;
+                }
             }
+        };
+        encontrarSala();
+    }, [uid]);
 
-            const dados = snap.data();
-            const lista = dados.jogadores || [];
+    useEffect(() =>{
+        if (!codigoSala) return;
 
-            const ordenados = [...lista].sort((a, b) => b.pontos - a.pontos);
+        const salaRef = doc(db, "salas", codigoSala);
 
-            setIsHost(dados.host === uid);
+        const unsubscribe = onSnapshot(salaRef, (snap) => {
+            if (!snap.exists()) return;
+
+            const sala = snap.data();
+            const ordenados = [...(sala.jogadores || [])].sort(
+                (a, b) => (b.pontos || 0) - (a.pontos || 0)
+            );
+
             setJogadores(ordenados);
             setCarregando(false);
-        };
+        });
+        return () => unsubscribe();
+    }, [codigoSala]);
 
-        carregarRanking();
-    }, [quizId, uid]);
+    const continuarQuiz = async () => {
+        if(!isHost || !codigoSala) return;
+
+        const salaRef = doc(db, "salas", codigoSala);
+
+        await updateDoc(salaRef, {
+            status: "jogando",
+            tempoRestante:30
+        });
+
+        navigate(-1);
+    }
 
     const placeholders = [
         { nome: "Carregando...", pontos: "...", fake: true },
@@ -74,9 +104,9 @@ function Ranking() {
                     ))}
                 </div>
 
-                { isHost && !carregando && <button className={styles.continuar} onClick={() => {navigate(-1)}}>
+                { isHost && !carregando && (<button className={styles.continuar} onClick={continuarQuiz}>
                     Continuar Quiz
-                </button>}
+                </button>)}
 
             </div>
         </div>
