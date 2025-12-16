@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase/bd";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc, onSnapshot } from "firebase/firestore";
 import styles from "./Podio.module.css"
 
 
 function Podio(){
 
     const navigate = useNavigate();
-    const { quizId } = useParams();
-
     const uid = auth.currentUser?.uid;
 
     const [tituloQuiz, setTituloQuiz] = useState("Carregando...");
     const [top3, setTop3] = useState([]);
+    const [codigoSala, setCodigoSala] = useState(null);
     const [carregando, setCarregando] = useState(true);
 
     function handleFechar(){
@@ -21,37 +20,67 @@ function Podio(){
     }
 
     useEffect(() => {
-        const carregarPodio = async () => {
-            if(!uid) return;
+        const encontrarSala = async () => {
+            if (!uid) return;
 
-            const quizRef = doc(db, "usuarios", uid, "quizzes", quizId);
-            const snap = await getDoc(quizRef);
+            const snap = await getDocs(collection(db, "salas"));
+            for (const docSnap of snap.docs) {
+                const sala = docSnap.data();
+                if (sala.jogadores?.some(j => j.uid === uid)) {
+                    setCodigoSala(docSnap.id);
+                    return;
+                }
+            }
+        };
+        encontrarSala();
+    }, [uid]);
 
+    useEffect(() => {
+        if (!codigoSala) return;
+
+        const salaRef = doc(db, "salas", codigoSala);
+
+        const unsubscribe = onSnapshot(salaRef, async (snap) => {
             if (!snap.exists()) return;
 
-            const quizData = snap.data();
-            setTituloQuiz(quizData.titulo || "Quiz");
+            const sala = snap.data();
 
-            const jogadores = quizData.jogadores || [];
+            if (sala.quizId && sala.hostUid) {
+                const quizRef = doc(
+                    db,
+                    "usuarios",
+                    sala.hostUid,
+                    "quizzes",
+                    sala.quizId
+                );
+
+                const quizSnap = await getDoc(quizRef);
+                if (quizSnap.exists()) {
+                    setTituloQuiz(quizSnap.data().titulo || "Quiz Sem Título");
+                }
+            }
+
+            const jogadores = sala.jogadores || [];
+
             const classificados = [...jogadores]
-                .sort((a, b) => b.pontos - a.pontos)
+                .sort((a, b) => (b.pontos || 0) - (a.pontos || 0))
                 .slice(0, 3);
 
             while (classificados.length < 3) {
                 classificados.push({
                     nome: "",
-                    pontos: "",
-                    personagem: "/personagens/p3.png"
+                    pontos: 0,
+                    personagem: `/personagens/p${classificados.length + 1}.png`,
+                    fake: true
                 });
             }
 
-            setTop3(classificados)
+            setTop3(classificados);
             setCarregando(false);
-        };
+        });
 
-        carregarPodio();
-
-    }, [quizId, uid]);
+        return () => unsubscribe();
+    }, [codigoSala]);
 
     if(carregando){
         return(
@@ -102,7 +131,11 @@ function Podio(){
         )
     }
 
-    const [primeiro, segundo, terceiro] = top3;
+    const [primeiro, segundo, terceiro] = [
+        top3[0] || {},
+        top3[1] || {},
+        top3[2] || {}
+    ]
 
     return(
         <div className={styles.container}>
@@ -120,7 +153,7 @@ function Podio(){
             <div className={styles.podio}>
 
                 <div className={styles.person2}>
-                    <img src={segundo.personagem} alt="personagem 2º" />
+                    <img src={segundo.personagem || "/personagens/p2.png"} alt="personagem 2º" />
                 </div>
                 <div className={styles.segundo}>
                     <p className={styles.nome}>{segundo.nome}</p>
@@ -129,7 +162,7 @@ function Podio(){
                 </div>
 
                 <div className={styles.person1}>
-                    <img src={primeiro.personagem} alt="personagem 1º" />
+                <img src={primeiro.personagem || "/personagens/p1.png"} alt="personagem 1º" />
                 </div>
                 <div className={styles.coroa}><img src="/podio/coroa.png" alt="coroa" /></div>
                 <div className={styles.primeiro}>
@@ -139,7 +172,7 @@ function Podio(){
                 </div>
 
                 <div className={styles.person3}>
-                    <img src={terceiro.personagem} alt="personagem 3º" />
+                    <img src={terceiro.personagem || "/personagens/p3.png"} alt="personagem 3º" />
                 </div>
                 <div className={styles.terceiro}>
                     <p className={styles.nome}>{terceiro.nome}</p>

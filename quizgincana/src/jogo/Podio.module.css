@@ -4,7 +4,7 @@
     position: relative;
     width: 100vw;
     height: 100vh;
-    background: url('./podio/fundopodio.png') center/cover no-repeat;
+    background: url('/podio/fundopodio.png') center/cover no-repeat;
     display: flex;
     align-items: center;
 }
@@ -109,6 +109,14 @@
     z-index: 1;
 }
 
+.person1 img{
+    height: 95%;
+    width: 80%;
+    z-index: 1;
+    margin-top: 15px;
+    margin-left: 25px;
+}
+
 .person2{
     height: 25vh;
     width: 23%;
@@ -116,6 +124,14 @@
     position: absolute;
     bottom: 50%;
     right: 73.25%; 
+}
+
+.person2 img{
+    height: 95%;
+    width: 85%;
+    z-index: 1;
+    margin-top: 15px;
+    margin-left: 25px;
 }
 
 .person3{
@@ -126,13 +142,20 @@
     bottom: 40%;
     right: 3.7%;
 }
+
+.person3 img{
+    height: 100%;
+    width: 95%;
+    z-index: 1;
+}
+
 .coroa{
     height: 28vh;
     width: 28%;
     position: absolute;
     bottom: 60%;
     right: 34.5%;
-
+    z-index: 2;
 }
 
 .coroa img{
