@@ -182,7 +182,6 @@ function Lobby() {
                     className={styles.iniciar}
                     onClick={iniciarJogo}
                 >
-                    Iniciar Jogo
                 </button>
             )}
 

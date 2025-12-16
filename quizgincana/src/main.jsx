@@ -33,11 +33,11 @@ const router = createBrowserRouter([
     element: <Pergunta /> 
   },
   { 
-    path: "/ranking/:quizId", 
+    path: "/ranking", 
     element: <Ranking /> 
   },
   { 
-    path: "/podio/:quizId", 
+    path: "/podio/", 
     element: <Podio /> 
   },
 

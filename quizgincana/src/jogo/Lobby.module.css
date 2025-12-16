@@ -61,7 +61,6 @@
   height: auto;
   transform: translate(-50%, -60%);
   object-fit: cover;
-  border: 3px solid white;
   z-index: 2;
   transform-origin: center center;
 }
@@ -95,14 +94,18 @@
 
 /* BOTÕES */
 .iniciar {
-  margin-top: 15px;
-  padding: 12px 20px;
+  height: 10vh;
+  cursor: pointer;
+  position: absolute;
+  top: 85%;
+  left: 40%;
+  width: 15vw;
   border-radius: 10px;
-  background: green;
-  color: #fff;
   font-size: 20px;
   border: none;
   cursor: pointer;
+  background: url(/lobby/botaocomecar.png)center/cover no-repeat;
+  transition: transform 0.1s ease;
 }
 
 .voltar {
@@ -163,16 +166,25 @@
   font-family: "Kalam", cursive;
   font-weight: 700;
   position: absolute;
-  top: 85%;
+  top: 87%;
   left: 10%;
   color: black;
 }
 
 .pronto{
   position: absolute;
+  top: 85%;
+  left: 45%;
   height: 10vh;
-  width: 10vw;
-  background: url(/lobby/pronto1.png)center/cover no-repeat;;
+  cursor: pointer;
+  border: none;
+  width: 15vw;
+  background: url(/lobby/pronto1.png)center/cover no-repeat;
+  transition: transform 0.1s ease;
+}
+
+.pronto:hover{
+  transform: scale(1.1);
 }
 
 .prontopostit{
@@ -181,4 +193,8 @@
   position: absolute;
   top: 18%;
   z-index: 2;
+}
+
+.iniciar:hover{
+  transform: scale(1.1);
 }
